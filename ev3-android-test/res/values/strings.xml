@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ev3-android-test</string>
+    <string name="SERVICE_TICKER">EV3 USB Service</string>
+
+</resources>
