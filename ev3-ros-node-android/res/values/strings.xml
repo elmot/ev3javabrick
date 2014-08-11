@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">EV3-ROS</string>
+    <string name="SERVICE_TICKER">EV3 USB Service</string>
+    <string name="RunBtn">Run</string>
+    <string name="StopBtn">Stop</string>
+</resources>
