@@ -86,7 +86,7 @@ public class EV3BrickUsbAndroid extends EV3Brick {
                         inBuffer.rewind();
                         int length = inBuffer.getShort(0) & 0xffff;
                         if (length < 3 || length > EV3_BLOCK_SIZE - 2) {
-                            Log.w(Constants.LOG_TAG,"Extra response in queue");
+                            Log.w(Constants.LOG_TAG, "Extra response in queue");
                             continue;
                         }
                         byte[] result = new byte[length + 2];
@@ -106,9 +106,10 @@ public class EV3BrickUsbAndroid extends EV3Brick {
 
     private void cancelPending(UsbEndpoint in, UsbDeviceConnection conn) {
         UsbRequest usbRequest = new UsbRequest();
-        usbRequest.initialize(conn,in);
-        try{
-            Log.i(Constants.LOG_TAG, "cancelling pending: " + usbRequest.cancel());
+        usbRequest.initialize(conn, in);
+        try {
+            boolean cancel = usbRequest.cancel();
+            if (cancel) Log.i(Constants.LOG_TAG, "cancelling pending");
         } finally {
             usbRequest.close();
         }

@@ -10,14 +10,19 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.text.Spannable;
+import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Chronometer;
-import android.widget.TextView;
+import android.widget.*;
 import com.example.ev3_android_test.R;
+
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
 
 import static elmot.javabrick.ev3.android.Constants.MsgSource;
 
@@ -28,6 +33,7 @@ public class Ev3Activity extends Activity {
     private Button stopButton;
     private Chronometer chronometer;
     private LegoTaskBase runTask = null;
+    private Deque<Spannable> logEnties = new LinkedList<Spannable>();
 
     public void log(int level, MsgSource source, String message) {
         Log.println(level, "EV3/USB", message);
@@ -49,8 +55,16 @@ public class Ev3Activity extends Activity {
         }
         spannable.setSpan(new ForegroundColorSpan(color), 0, spannable.length(), 0);
 
-        logView.append(spannable);
-        logView.append("\n");
+        logEnties.addFirst(spannable);
+        while (logEnties.size() > 50) {
+            logEnties.removeLast();
+        }
+
+        SpannableStringBuilder text = new SpannableStringBuilder();
+        for (Spannable logEnty : logEnties) {
+            text.append(logEnty).append('\n');
+        }
+        logView.setText(text);
     }
 
     /**
@@ -87,9 +101,16 @@ public class Ev3Activity extends Activity {
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                log(Log.WARN, MsgSource.ACTIVITY, "Stopping");
                 runTask.cancel(true);
-                chronometer.stop();
-                updateButtons(Ev3Activity.this.isRunning());
+                stopButton.setPressed(true);
+                for (int i = 0; Ev3Activity.this.isRunning() && i < 100; i++) {
+                    try {
+                        Thread.sleep(10);
+                    } catch (InterruptedException e) {
+                        updateButtons(false);
+                    }
+                }
             }
         });
         if (isAutoStart())
@@ -103,6 +124,7 @@ public class Ev3Activity extends Activity {
     private void runTask() {
         runTask = new LegoTask(this);
         runTask.execute();
+        chronometer.setBase(SystemClock.elapsedRealtime());
         chronometer.start();
         updateButtons(this.isRunning());
     }
@@ -124,9 +146,11 @@ public class Ev3Activity extends Activity {
     }
 
     public void updateButtons(boolean running) {
+        stopButton.setPressed(false);
         if (running) {
             stopButton.setEnabled(true);
             runButton.setEnabled(false);
+            chronometer.stop();
         } else {
             stopButton.setEnabled(false);
             runButton.setEnabled(true);

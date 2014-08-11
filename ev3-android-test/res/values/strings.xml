@@ -3,5 +3,8 @@
 
     <string name="app_name">ev3-android-test</string>
     <string name="SERVICE_TICKER">EV3 USB Service</string>
+    <string name="title">AndroBrick-EV3</string>
+    <string name="RunBtn">Run</string>
+    <string name="StopBtn">Stop</string>
 
 </resources>

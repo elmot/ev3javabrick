@@ -9,13 +9,6 @@ import elmot.javabrick.ev3.android.usb.EV3BrickUsbAndroid;
 
 import java.io.IOException;
 
-/**
-* Created with IntelliJ IDEA.
-* User: elmot
-* Date: 10.08.14
-* Time: 14:42
-* To change this template use File | Settings | File Templates.
-*/
 public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
     private Ev3Activity ev3Activity;
 
@@ -46,10 +39,20 @@ public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
     }
 
     @Override
+    protected void onCancelled() {
+        super.onCancelled();
+        afterStop();
+    }
+
+    @Override
     protected void onPostExecute(Exception exception) {
         super.onPostExecute(exception);
         if (exception != null)
             ev3Activity.log(Log.ERROR, Constants.MsgSource.SERVICE, exception.getClass().getName() + ": " + exception.getMessage());
+        afterStop();
+    }
+
+    private void afterStop() {
         ev3Activity.log(Log.INFO, Constants.MsgSource.SERVICE, "Execution finished");
         ev3Activity.updateButtons(false);
     }
@@ -60,4 +63,14 @@ public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
         ev3Activity.log(Log.INFO, Constants.MsgSource.SERVICE, values[0]);
     }
 
+    protected void showProgress(String... messages) throws InterruptedException {
+        checkRunning();
+        publishProgress(messages);
+    }
+
+    private void checkRunning() throws InterruptedException {
+        if (isCancelled()) {
+            throw new InterruptedException();
+        }
+    }
 }
