@@ -3,7 +3,6 @@ package elmot.javabrick.ev3.android.usb;
 import android.hardware.usb.*;
 import android.util.Log;
 import elmot.javabrick.ev3.EV3Brick;
-import elmot.javabrick.ev3.android.Constants;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -12,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EV3BrickUsbAndroid extends EV3Brick {
+    public static final String LOG_TAG = "USB/EV3";
     private UsbDevice usbDevice;
     private final UsbManager usbManager;
 
@@ -86,7 +86,7 @@ public class EV3BrickUsbAndroid extends EV3Brick {
                         inBuffer.rewind();
                         int length = inBuffer.getShort(0) & 0xffff;
                         if (length < 3 || length > EV3_BLOCK_SIZE - 2) {
-                            Log.w(Constants.LOG_TAG, "Extra response in queue");
+                            Log.w(LOG_TAG, "Extra response in queue");
                             continue;
                         }
                         byte[] result = new byte[length + 2];
@@ -109,7 +109,7 @@ public class EV3BrickUsbAndroid extends EV3Brick {
         usbRequest.initialize(conn, in);
         try {
             boolean cancel = usbRequest.cancel();
-            if (cancel) Log.i(Constants.LOG_TAG, "cancelling pending");
+            if (cancel) Log.i(LOG_TAG, "cancelling pending");
         } finally {
             usbRequest.close();
         }

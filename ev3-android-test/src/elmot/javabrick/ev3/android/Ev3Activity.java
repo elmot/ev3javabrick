@@ -16,13 +16,13 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
 import android.view.View;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.Chronometer;
+import android.widget.TextView;
 import com.example.ev3_android_test.R;
 
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
-import java.util.List;
 
 import static elmot.javabrick.ev3.android.Constants.MsgSource;
 
@@ -61,8 +61,8 @@ public class Ev3Activity extends Activity {
         }
 
         SpannableStringBuilder text = new SpannableStringBuilder();
-        for (Spannable logEnty : logEnties) {
-            text.append(logEnty).append('\n');
+        for (Spannable logEntry : logEnties) {
+            text.append(logEntry).append('\n');
         }
         logView.setText(text);
     }
