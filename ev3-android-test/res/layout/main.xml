@@ -4,34 +4,63 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
               android:focusable="false"
-              android:gravity="bottom|top" android:stretchColumns="true"
-              android:longClickable="true" android:rowCount="3" android:columnCount="3">
-    <TextView
-            android:layout_width="fill_parent"
+              android:gravity="bottom|top"
+              android:stretchColumns="true"
+              android:longClickable="true"
+              android:rowCount="3"
+              android:columnCount="3">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/title"/>
-    <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content">
-        <Button
-                android:layout_width="80sp"
-                android:layout_height="40sp"
-                android:text="@string/RunBtn"
-                android:id="@+id/runButton" android:layout_gravity="top"
-                android:enabled="true" android:focusable="true" android:focusableInTouchMode="true"
-                android:background="@android:color/holo_green_dark" android:layout_margin="5sp"
-                android:clickable="true"/>
-        <Button
-                android:layout_width="80sp"
-                android:layout_height="40sp"
-                android:text="@string/StopBtn"
-                android:id="@+id/stopButton"
-                android:focusableInTouchMode="true" android:focusable="true"
-                android:background="@android:color/holo_red_dark" android:layout_margin="5sp" android:clickable="true"/>
-        <Chronometer
-                android:layout_width="fill_parent"
-                android:layout_height="40sp"
-                android:id="@+id/chronometer"
-                android:layout_gravity="center"/>
+            android:baselineAligned="false">
+
+        <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+            <Button
+                    android:layout_width="80sp"
+                    android:layout_height="40sp"
+                    android:text="@string/RunBtn"
+                    android:id="@+id/runButton"
+                    android:layout_gravity="top"
+                    android:enabled="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true"
+                    android:background="@android:color/holo_green_dark"
+                    android:layout_margin="5sp"
+                    android:clickable="true"/>
+
+            <Button
+                    android:layout_width="80sp"
+                    android:layout_height="40sp"
+                    android:text="@string/StopBtn"
+                    android:id="@+id/stopButton"
+                    android:focusableInTouchMode="true"
+                    android:focusable="true"
+                    android:background="@android:color/holo_red_dark"
+                    android:layout_margin="5sp"
+                    android:clickable="true"/>
+
+            <Chronometer
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/chronometer"
+                    android:layout_gravity="center"
+                    android:paddingLeft="10sp"/>
+        </LinearLayout>
+
+        <FrameLayout
+                android:id="@+id/camera_preview"
+                android:layout_width="240dp"
+                android:layout_height="180dp"
+                android:layout_weight="10">
+        </FrameLayout>
     </LinearLayout>
+
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -39,11 +68,14 @@
             android:isScrollContainer="true"
             android:scrollbarAlwaysDrawVerticalTrack="true"
             android:scrollbarStyle="outsideInset"
-            android:scrollbars="vertical" android:fillViewport="false">
+            android:scrollbars="vertical"
+            android:fillViewport="false">
+
         <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/logView"/>
     </ScrollView>
+
 </LinearLayout>
 

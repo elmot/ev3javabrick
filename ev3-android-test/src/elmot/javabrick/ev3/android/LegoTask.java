@@ -1,6 +1,5 @@
 package elmot.javabrick.ev3.android;
 
-import elmot.javabrick.ev3.MotorFactory;
 import elmot.javabrick.ev3.PORT;
 import elmot.javabrick.ev3.android.usb.EV3BrickUsbAndroid;
 
@@ -13,9 +12,11 @@ public class LegoTask extends LegoTaskBase {
     }
 
     protected void runBrick(EV3BrickUsbAndroid brick) throws IOException, InterruptedException {
+/*
         showProgress("Tone play");
         brick.SYSTEM.playTone(50, 330, 300);
         showProgress("Tone played");
+*/
 /*
 
         brick.MOTOR.direction(MotorFactory.MOTORSET.A, MotorFactory.DIR.FORWARD);
@@ -45,12 +46,13 @@ public class LegoTask extends LegoTaskBase {
         brick.MOTOR.stop(MotorFactory.MOTORSET.A, MotorFactory.BRAKE.COAST);
         brick.SYSTEM.playTone(50, 140, 1300);
 */
-        for(int i =0; i < 1000; i++)
-        {
+        for (int i = 0; i < 1000; i++) {
             float read = brick.IR.readProximity(0, PORT.P4);
             Thread.sleep(500);
             showProgress("Proximity: " + read);
+            showProgress(scanBarcode());
         }
+        showProgress("Finish");
     }
 
 }

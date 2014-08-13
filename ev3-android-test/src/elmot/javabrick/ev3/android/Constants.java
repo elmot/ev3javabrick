@@ -12,8 +12,7 @@ public class Constants {
     public static final String ACTION_USB_DEVICE_ATTACHED = Constants.class.getPackage().getName() + ".ATTACHED";
     public static final String SERVICE_LOG = Constants.class.getPackage().getName() + ".DETACHED";
 
-    public enum MsgSource
-    {
+    public enum MsgSource {
         SERVICE(""), ACTIVITY("text-decoration:italic"), SYSTEM("text-weight:bold");
         public final String STYLE;
 

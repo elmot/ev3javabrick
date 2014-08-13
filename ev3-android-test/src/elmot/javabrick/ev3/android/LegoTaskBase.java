@@ -4,7 +4,6 @@ import android.content.Context;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import elmot.javabrick.ev3.MotorFactory;
 import elmot.javabrick.ev3.android.usb.EV3BrickUsbAndroid;
 
 import java.io.IOException;
@@ -72,5 +71,12 @@ public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
         if (isCancelled()) {
             throw new InterruptedException();
         }
+    }
+
+    /**
+     * @return read barcode value or null
+     */
+    protected String scanBarcode() {
+        return ev3Activity.scanBarcode();
     }
 }

@@ -18,8 +18,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.example.ev3_android_test.R;
+import elmot.javabrick.barcode.CameraPreview;
 
 import java.util.Deque;
 import java.util.LinkedList;
@@ -34,9 +36,10 @@ public class Ev3Activity extends Activity {
     private Chronometer chronometer;
     private LegoTaskBase runTask = null;
     private Deque<Spannable> logEnties = new LinkedList<Spannable>();
+    private CameraPreview cameraPreview;
 
     public void log(int level, MsgSource source, String message) {
-        Log.println(level, "EV3/USB", message);
+        Log.println(level, "EV3/USB", message == null ? "NULL" : message);
         Spannable spannable = Spannable.Factory.getInstance().newSpannable(source + ": " + message);
         int color = Color.WHITE;
         switch (level) {
@@ -113,6 +116,13 @@ public class Ev3Activity extends Activity {
                 }
             }
         });
+        // Create an instance of Camera
+
+        // Create our Preview view and set it as the content of our activity.
+        cameraPreview = new CameraPreview(this);
+        FrameLayout preview = (FrameLayout) findViewById(R.id.camera_preview);
+        preview.addView(cameraPreview);
+
         if (isAutoStart())
             runTask();
     }
@@ -168,4 +178,10 @@ public class Ev3Activity extends Activity {
         unregisterReceiver(detachReceiver);
     }
 
+    /**
+     * @return read barcode value or null
+     */
+    public String scanBarcode() {
+        return cameraPreview.scanBarcode();
+    }
 }

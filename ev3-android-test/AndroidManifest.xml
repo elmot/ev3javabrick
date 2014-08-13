@@ -3,7 +3,9 @@
           package="com.example.ev3_android_test"
           android:versionCode="1"
           android:versionName="1.0">
-    <uses-sdk android:minSdkVersion="14"/>
+    <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="18"/>
+    <uses-feature android:name="android.hardware.camera" android:required="true"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
     <application android:label="@string/app_name" android:icon="@drawable/ic_launcher">
         <activity android:name="elmot.javabrick.ev3.android.Ev3Activity"
                   android:label="@string/app_name" >
