@@ -12,11 +12,9 @@ public class LegoTask extends LegoTaskBase {
     }
 
     protected void runBrick(EV3BrickUsbAndroid brick) throws IOException, InterruptedException {
-/*
         showProgress("Tone play");
         brick.SYSTEM.playTone(50, 330, 300);
         showProgress("Tone played");
-*/
 /*
 
         brick.MOTOR.direction(MotorFactory.MOTORSET.A, MotorFactory.DIR.FORWARD);
@@ -50,7 +48,7 @@ public class LegoTask extends LegoTaskBase {
             float read = brick.IR.readProximity(0, PORT.P4);
             Thread.sleep(500);
             showProgress("Proximity: " + read);
-            showProgress(scanBarcode());
+            showProgress("Found barcode: " + scanBarcode());
         }
         showProgress("Finish");
     }
