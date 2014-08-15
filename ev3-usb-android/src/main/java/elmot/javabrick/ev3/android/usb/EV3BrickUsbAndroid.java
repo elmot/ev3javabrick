@@ -23,13 +23,17 @@ public class EV3BrickUsbAndroid extends EV3Brick {
 
     @Override
     public void ensureOpen() throws IOException {
-        HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
-        for (Map.Entry<String, UsbDevice> deviceEntry : deviceList.entrySet()) {
-            UsbDevice listedDevice = deviceEntry.getValue();
-            if (usbDevice == null && listedDevice.getVendorId() == 1684 && listedDevice.getProductId() == 5)
-                usbDevice = listedDevice;
-        }
+        usbDevice = findDevice(usbManager);
         if (usbDevice == null) throw new IOException("EV3 is not found!");
+    }
+
+    public static UsbDevice  findDevice(UsbManager usbManager) {
+        for (Map.Entry<String, UsbDevice> deviceEntry : usbManager.getDeviceList().entrySet()) {
+            UsbDevice listedDevice = deviceEntry.getValue();
+            if (listedDevice.getVendorId() == 1684 && listedDevice.getProductId() == 5)
+                return listedDevice;
+        }
+        return null;
     }
 
     @Override
