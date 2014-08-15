@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Lego-Ros</string>
+    <string name="node_name">LEGOROS1</string>
+    <string name="run_master">Run Master</string>
+    <string name="ros_master_url">ROS master URL:</string>
+    <string name="mood_picture">Mood Picture</string>
+    <string name="USB_connection">USB connection</string>
+    <string name="disconnected">LEGO EV3 Disconnected</string>
+    <string name="connected">LEGO EV3 Connected</string>
+    <string name="master_started">ROS Master Started</string>
+    <string name="cick_to_stop">Click to stop</string>
+</resources>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="android" name="Android">
+      <configuration>
+        <option name="UPDATE_PROPERTY_FILES" value="true" />
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="Android 4.0 Platform" jdkType="Android SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="netty-3.5.2.Final" level="project" />
+    <orderEntry type="library" name="commons_pool-1.6" level="project" />
+    <orderEntry type="library" name="commons_codec-1.2" level="project" />
+    <orderEntry type="library" name="apache_xmlrpc_client-0.1.6" level="project" />
+    <orderEntry type="library" name="apache_xmlrpc_common-0.1.6" level="project" />
+    <orderEntry type="library" name="apache_xmlrpc_server-0.1.6" level="project" />
+    <orderEntry type="library" name="com.springsource.org.apache.commons.httpclient-3.1.0" level="project" />
+    <orderEntry type="library" name="com.springsource.org.apache.commons.logging-1.1.1" level="project" />
+    <orderEntry type="library" name="guava-12.0" level="project" />
+    <orderEntry type="library" name="message_generation-0.1.22" level="project" />
+    <orderEntry type="library" name="nav_msgs-1.10.2" level="project" />
+    <orderEntry type="library" name="rosgraph_msgs-1.9.50" level="project" />
+    <orderEntry type="library" name="rosjava-0.1.6" level="project" />
+    <orderEntry type="library" name="sensor_msgs-1.10.2" level="project" />
+    <orderEntry type="library" name="std_msgs-0.5.8" level="project" />
+    <orderEntry type="library" name="std_srvs-1.9.50" level="project" />
+    <orderEntry type="library" name="ws-commons-util-1.0.1" level="project" />
+    <orderEntry type="module" module-name="ev3-usb-android" exported="" />
+    <orderEntry type="module" module-name="ev3-common" exported="" />
+    <orderEntry type="library" name="geometry_msgs-1.10.2" level="project" />
+    <orderEntry type="library" name="sound_play-0.2.4" level="project" />
+  </component>
+</module>
+

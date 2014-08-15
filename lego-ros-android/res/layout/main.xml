@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            >
+
+      <!--  <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/run_master"
+                android:id="@+id/masterNodeSwitch"
+                android:layout_gravity="center"
+                android:checked="true"
+                android:enabled="true"
+                android:clickable="false"
+                android:longClickable="false"/>
+-->
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:id="@+id/masterUrlTextView"
+                android:layout_weight="1"
+                style="@android:style/TextAppearance.DeviceDefault.Large"/>
+
+        <Chronometer
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/chronometer"
+                android:layout_gravity="right"
+                style="@android:style/TextAppearance.DeviceDefault.Large"/>
+    </LinearLayout>
+
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+
+        <SurfaceView
+                android:id="@+id/cameraView"
+                android:layout_width="160dip"
+                android:layout_height="120dip"
+                android:layout_gravity="center|left|top"/>
+        <ImageView
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:id="@+id/moodImageView"
+                android:layout_gravity="center"
+                android:layout_weight="0.4"
+                android:contentDescription="@string/mood_picture"/>
+
+        <ScrollView
+                android:layout_width="0dip"
+                android:layout_height="fill_parent"
+                android:id="@+id/scrollView"
+                android:layout_weight="0.6"
+                android:background="@android:color/darker_gray"
+                android:scrollbars="vertical"
+                android:scrollbarAlwaysDrawVerticalTrack="true"
+                android:fadeScrollbars="false">
+
+            <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/logView"
+                    android:textSize="20dp"/>
+        </ScrollView>
+    </LinearLayout>
+
+</LinearLayout>
