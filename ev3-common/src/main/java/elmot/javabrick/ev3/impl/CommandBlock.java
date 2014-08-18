@@ -58,7 +58,7 @@ public class CommandBlock {
         bytes[5] = (byte) (globalVarCount & 0xff);
         bytes[6] = (byte) (globalVarCount >> 8);
         byte [] responseBytes = brick.dataExchange(bytes);
-        int readSeqNo = responseBytes[3] << 8 | (0xff & (int)responseBytes[2]) ;
+        int readSeqNo = ((responseBytes[3] << 8)& 0xFF00) | (0xff & (int)responseBytes[2]) ;
         if (readSeqNo != seqNumber) {
             throw new IOException("Unexpected Response seq. no.");
         }
