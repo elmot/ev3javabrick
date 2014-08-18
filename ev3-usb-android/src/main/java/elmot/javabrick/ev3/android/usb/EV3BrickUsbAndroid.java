@@ -64,11 +64,15 @@ public class EV3BrickUsbAndroid extends EV3Brick {
                 ByteBuffer outBuffer = ByteBuffer.allocate(EV3_BLOCK_SIZE).order(ByteOrder.LITTLE_ENDIAN);
                 UsbRequest outRequest = new UsbRequest();
                 outBuffer.put(cmd);
+                int seqNo = outBuffer.getShort(2);
                 if (!outRequest.initialize(conn, out))
                     throw new IOException("Can not initialize OUT request");
                 try {
                     if (!outRequest.queue(outBuffer, EV3_BLOCK_SIZE))
+                    {
+                        outRequest.cancel();
                         throw new IOException("Can not queue OUT request");
+                    }
                     for (UsbRequest usbRequest; (usbRequest = conn.requestWait()) != outRequest; ) {
                         if (usbRequest == null)
                             throw new IOException("OUT Request wait error");
@@ -91,6 +95,12 @@ public class EV3BrickUsbAndroid extends EV3Brick {
                         int length = inBuffer.getShort(0) & 0xffff;
                         if (length < 3 || length > EV3_BLOCK_SIZE - 2) {
                             Log.w(LOG_TAG, "Extra response in queue");
+                            continue;
+                        }
+                        int readSeqNo = inBuffer.getShort(2);
+                        if(readSeqNo <seqNo)
+                        {
+                            Log.w(LOG_TAG, "Resynch EV3 seq no", new IOException());
                             continue;
                         }
                         byte[] result = new byte[length + 2];
