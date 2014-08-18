@@ -28,7 +28,7 @@ public class Settings {
 
     public static final GraphName NODE_NAME = GraphName.of("/EV3_TEST");
 
-    public static final String INSTANCE_NAME = "MINDSTORMS_A";
+    public static final GraphName INSTANCE_NAME = GraphName.of("/MINDSTORMS_A");
 
     public static String ownIpAddress() {
         try {

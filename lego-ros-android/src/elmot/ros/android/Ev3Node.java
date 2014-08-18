@@ -4,17 +4,20 @@ import android.hardware.usb.UsbManager;
 import elmot.javabrick.ev3.MotorFactory;
 import elmot.javabrick.ev3.PORT;
 import elmot.javabrick.ev3.android.usb.EV3BrickUsbAndroid;
-import geometry_msgs.Point;
+import geometry_msgs.TransformStamped;
+import geometry_msgs.Twist;
 import nav_msgs.Odometry;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
 import org.ros.node.ConnectedNode;
-import org.ros.node.topic.DefaultSubscriberListener;
 import org.ros.node.topic.Publisher;
 import org.ros.node.topic.Subscriber;
-import std_msgs.*;
+import std_msgs.Bool;
+import std_msgs.Float32;
+import std_msgs.Header;
+import std_msgs.Int16;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -34,6 +37,8 @@ class Ev3Node extends AbstractNodeMain {
     private Publisher<Float32> irPublisher;
     private Publisher<Float32> voltagePublisher;
     private Publisher<Odometry> odometryPublisher;
+    private Publisher<TransformStamped> tfPublisher;
+    private OdoComputer odoComputer;
 
     Ev3Node(UsbManager usbManager) {
         this.usbManager = usbManager;
@@ -46,15 +51,19 @@ class Ev3Node extends AbstractNodeMain {
 
     @Override
     public void onStart(ConnectedNode connectedNode) {
+        this.connectedNode = connectedNode;
+        super.onStart(connectedNode);
         brick = new EV3BrickUsbAndroid(usbManager);
         clamp(false);
-        super.onStart(connectedNode);
-        this.connectedNode = connectedNode;
-        irPublisher = connectedNode.newPublisher(Settings.NODE_NAME.join("ir_distance"), Float32._TYPE);
-        voltagePublisher = connectedNode.newPublisher(Settings.NODE_NAME.join("voltage"), Float32._TYPE);
-        odometryPublisher = connectedNode.newPublisher(Settings.NODE_NAME.join("odom"), Odometry._TYPE);
 
-        Subscriber<Bool> clampSubscriber = connectedNode.newSubscriber(Settings.NODE_NAME.join("clamp"), Bool._TYPE);
+        odoComputer = new OdoComputer(1.7, 14.3, connectedNode.getCurrentTime());
+
+        irPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("ir_distance"), Float32._TYPE);
+        voltagePublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("voltage"), Float32._TYPE);
+        odometryPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("odom"), Odometry._TYPE);
+        tfPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("tf"), TransformStamped._TYPE);
+
+        Subscriber<Bool> clampSubscriber = connectedNode.newSubscriber(Settings.INSTANCE_NAME.join("grip"), Bool._TYPE);
         clampSubscriber.addMessageListener(new MessageListener<Bool>() {
             @Override
             public void onNewMessage(Bool bool) {
@@ -62,20 +71,21 @@ class Ev3Node extends AbstractNodeMain {
             }
         });
 
-        Subscriber<ByteMultiArray> motorSpeedSubscriber = connectedNode.newSubscriber(Settings.NODE_NAME.join("motorSpeed"), ByteMultiArray._TYPE);
-        motorSpeedSubscriber.addMessageListener(new MessageListener<ByteMultiArray>() {
+        Subscriber<Twist> motorSpeedSubscriber = connectedNode.newSubscriber(Settings.INSTANCE_NAME.join("cmd_vel"), Twist._TYPE);
+        motorSpeedSubscriber.addMessageListener(new MessageListener<Twist>() {
             @Override
-            public void onNewMessage(ByteMultiArray msg) {
-                ChannelBuffer data = msg.getData();
+            public void onNewMessage(Twist msg) {
+                double speed = msg.getLinear().getX() * 100;
+                double twist = msg.getAngular().getZ() * 100 / Math.PI;
                 try {
-                    brick.MOTOR.timeSync(0, MotorFactory.MOTORSET.BC, data.getByte(0), data.getByte(1), 1000, MotorFactory.BRAKE.COAST);
+                    brick.MOTOR.timeSync(0, MotorFactory.MOTORSET.BC, (int)speed, (int) twist, 1000, MotorFactory.BRAKE.COAST);
                 } catch (IOException e) {
-                    Ev3Node.this.connectedNode.getLog().error("Clamp error", e);
+                    Ev3Node.this.connectedNode.getLog().error("Motor error", e);
                 }
             }
         });
 
-        Subscriber<Int16> toneSubscriber = connectedNode.newSubscriber(Settings.NODE_NAME.join("tone"), Int16._TYPE);
+        Subscriber<Int16> toneSubscriber = connectedNode.newSubscriber(Settings.INSTANCE_NAME.join("tone"), Int16._TYPE);
         toneSubscriber.addMessageListener(new MessageListener<Int16>() {
             @Override
             public void onNewMessage(Int16 freq) {
@@ -106,7 +116,7 @@ class Ev3Node extends AbstractNodeMain {
                 brick.MOTOR.stop(MotorFactory.MOTORSET.A, MotorFactory.BRAKE.COAST);
             }
         } catch (Exception e) {
-            connectedNode.getLog().error("Clamp error", e);
+            connectedNode.getLog().error("Grip error", e);
         }
     }
 
@@ -117,6 +127,7 @@ class Ev3Node extends AbstractNodeMain {
 
     private class SensorSample implements Runnable {
         private int seq = 0;
+
         @Override
         public void run() {
             try {
@@ -129,18 +140,28 @@ class Ev3Node extends AbstractNodeMain {
                 voltagePublisher.publish(voltage);
 
                 Odometry odometry = odometryPublisher.newMessage();
-                Header header = odometry.getHeader();
-                header.setSeq(seq++);
-                header.setFrameId("cat");
-                header.setStamp(connectedNode.getCurrentTime());
+                setupHeader(odometry.getHeader(), seq);
                 odometry.setChildFrameId("center");
-                Point position = odometry.getPose().getPose().getPosition();
-                position.setX(brick.MOTOR.getTacho(MotorFactory.MOTOR.B));
-                position.setY(brick.MOTOR.getTacho(MotorFactory.MOTOR.C));
+
+                TransformStamped tfs = tfPublisher.newMessage();
+                setupHeader(tfs.getHeader(), seq);
+                tfs.setChildFrameId("center");
+
+                long tachoL = brick.MOTOR.getTacho(MotorFactory.MOTOR.B);
+                long tachoR = brick.MOTOR.getTacho(MotorFactory.MOTOR.C);
+                odoComputer.computeOdometry(tachoL, tachoR, odometry, tfs);
+                seq++;
                 odometryPublisher.publish(odometry);
+                tfPublisher.publish(tfs);
             } catch (IOException e) {
                 connectedNode.getLog().error("Sensors error", e);
             }
+        }
+
+        private void setupHeader(Header header, int seq) {
+            header.setSeq(seq);
+            header.setFrameId("cat");
+            header.setStamp(connectedNode.getCurrentTime());
         }
     }
 }

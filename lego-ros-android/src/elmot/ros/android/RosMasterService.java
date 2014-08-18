@@ -43,7 +43,7 @@ public class RosMasterService extends Service {
         new Thread() {
             @Override
             public void run() {
-                String logName = Settings.NODE_NAME.toString();
+                String logName = Settings.INSTANCE_NAME.toString();
                 LogFactory.getLog(logName);
                 LogManager logManager = LogManager.getLogManager();
                 Logger logger = logManager.getLogger(logName);
