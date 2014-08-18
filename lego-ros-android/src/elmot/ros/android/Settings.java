@@ -19,10 +19,10 @@ public class Settings {
     private Settings() {
     }
 
-//    public static final int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_FRONT;
-    public static final int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_BACK;
+    public static final int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_FRONT;
+//    public static final int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_BACK;
     public static final int CAMERA_LOOP_MS = 2000;
-    public static final int SAMPLING_LOOP_MS = 100;
+    public static final int SAMPLING_LOOP_MS = 200;
 
     public static final String LOG_TAG = "ROS/ELMOT";
 

@@ -35,7 +35,6 @@
     <orderEntry type="module" module-name="ev3-usb-android" exported="" />
     <orderEntry type="module" module-name="ev3-common" exported="" />
     <orderEntry type="library" name="geometry_msgs-1.10.2" level="project" />
-    <orderEntry type="library" name="sound_play-0.2.4" level="project" />
   </component>
 </module>
 
