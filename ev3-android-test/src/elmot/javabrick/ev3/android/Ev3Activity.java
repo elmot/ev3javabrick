@@ -21,6 +21,7 @@ import android.widget.Chronometer;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import com.example.ev3_android_test.R;
+import com.google.zxing.Result;
 import elmot.javabrick.barcode.CameraPreview;
 
 import java.util.Deque;
@@ -178,10 +179,7 @@ public class Ev3Activity extends Activity {
         unregisterReceiver(detachReceiver);
     }
 
-    /**
-     * @return read barcode value or null
-     */
-    public String scanBarcode() {
-        return cameraPreview.scanBarcode();
+    public Result getLastDecodedBarcode() {
+        return cameraPreview.getLastDecoded();
     }
 }

@@ -1,8 +1,6 @@
 package elmot.javabrick.barcode;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -10,20 +8,21 @@ import android.view.SurfaceView;
 import com.google.zxing.*;
 import com.google.zxing.client.android.camera.CameraConfigurationUtils;
 import com.google.zxing.common.HybridBinarizer;
+import com.google.zxing.oned.Code39Reader;
 import elmot.javabrick.ev3.android.Constants;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * /** A basic Camera preview class
  */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private final com.google.zxing.Reader barCodeReader;
-    private final Map<DecodeHintType, Object> barcodeHints;
+
+
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    private volatile Result lastDecoded = null;
 
     public static Camera getCameraInstance() {
         Camera c = null;
@@ -31,7 +30,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         for (int i = Camera.getNumberOfCameras() - 1; i >= 0; i--) {
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
             Camera.getCameraInfo(i, cameraInfo);
-            if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            if (cameraInfo.facing == Constants.CAMERA_FACING) {
                 cameraIndex = i;
                 break;
             }
@@ -57,17 +56,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // underlying surface is created and destroyed.
         mHolder = getHolder();
         mHolder.addCallback(this);
-        barCodeReader = new MultiFormatReader();
-        barcodeHints = new HashMap<DecodeHintType, Object>();
-//        barcodeHints.put(DecodeHintType.POSSIBLE_FORMATS, Arrays.asList(BarcodeFormat.QR_CODE, BarcodeFormat.EAN_13, BarcodeFormat.CODE_39));
-        barcodeHints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+        barCodeReader = new Code39Reader();
     }
 
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
         try {
             mCamera.setPreviewDisplay(holder);
-            mCamera.startPreview();
+            startPreview();
         } catch (IOException e) {
             Log.d(Constants.LOG_TAG, "Error setting camera preview: " + e.getMessage());
         }
@@ -97,13 +93,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(mHolder);
-            mCamera.startPreview();
+            startPreview();
 
         } catch (Exception e) {
             Log.d(Constants.LOG_TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
 
+/*
     public BinaryBitmap getCameraImage() {
         final Object lock = new Object();
         final byte[][] dataResult = {null};
@@ -124,11 +121,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 while (dataResult[0] == null)
                     lock.wait();
             } catch (InterruptedException e) {
-                mCamera.startPreview();
+                startPreview();
                 return null;
             }
         }
-        mCamera.startPreview();
+        startPreview();
+
         Bitmap bitmap = BitmapFactory.decodeByteArray(dataResult[0], 0, dataResult[0].length);
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
@@ -138,12 +136,37 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         return new BinaryBitmap(new HybridBinarizer(luminanceSource));
     }
 
-    /**
+*/
+    private void startPreview() {
+        mCamera.startPreview();
+        mCamera.setPreviewCallback(
+                new Camera.PreviewCallback() {
+                    @Override
+                    public void onPreviewFrame(byte[] data, Camera camera) {
+                        Camera.Size previewSize = camera.getParameters().getPreviewSize();
+                        LuminanceSource luminanceSource = new PlanarYUVLuminanceSource(data, previewSize.width, previewSize.height, 0, 0, previewSize.width, previewSize.height, false);
+                        Log.i(Constants.LOG_TAG, "Camera data: " + camera.getParameters().flatten());
+                        Result decode = null;
+                        try {
+                            decode = barCodeReader.decode(new BinaryBitmap(new HybridBinarizer(luminanceSource)), Constants.BARCODE_HINTS);
+                            lastDecoded = decode;
+                            Log.d(Constants.LOG_TAG, "Barcode: " + decode);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                }
+        );
+    }
+
+/*
+    */
+/**
      * @return read barcode value or null
-     */
+     *//*
+
     public synchronized String scanBarcode() {
         try {
-            Result decode = barCodeReader.decode(getCameraImage(), barcodeHints);
+            Result decode = barCodeReader.decode(getCameraImage(), BARCODE_HINTS);
             String text = decode.getText();
             Log.i(Constants.LOG_TAG, "Barcode: " + text);
             return text;
@@ -157,5 +180,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Log.i(Constants.LOG_TAG, "Barcode format error");
             return null;
         }
+    }
+*/
+
+    public Result getLastDecoded() {
+        return lastDecoded;
     }
 }

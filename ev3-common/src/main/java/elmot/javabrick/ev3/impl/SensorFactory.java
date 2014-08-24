@@ -1,6 +1,6 @@
 package elmot.javabrick.ev3.impl;
 
-import elmot.javabrick.ev3.EV3Brick;
+import elmot.javabrick.ev3.EV3;
 import elmot.javabrick.ev3.PORT;
 
 import java.io.IOException;
@@ -21,10 +21,14 @@ public class SensorFactory extends FactoryBase {
     public static final int SUBCMD_READ_SI = 29;
     public static final int SUBCMD_GET_BUMPS = 31;
 
+
+    protected SensorFactory(EV3 ev3) {
+        super(ev3);
+    }
     protected float readSI(int daisyChainLevel, PORT port, int mode) throws IOException {
         Command command = new Command(CMD_INPUT_READ_SI, 4);
         command.addByte(daisyChainLevel);
-        command.addByte(port.val);
+        command.addByte(port.portNum);
         command.addIntConstantParam(0);
         command.addByte(mode);
         command.addShortGlobalVariable(0);
@@ -32,15 +36,10 @@ public class SensorFactory extends FactoryBase {
         return response.getFloat(0);
     }
 
-
-    protected SensorFactory(EV3Brick brick) {
-        super(brick);
-    }
-
     protected void setMode(int daisyChainLevel, PORT port, int mode) throws IOException {
         Command command = new Command(0x9d, 4);
         command.addByte(daisyChainLevel);
-        command.addByte(port.val);
+        command.addByte(port.portNum);
         command.addIntConstantParam(0);
         command.addByte(mode);
         command.addShortGlobalVariable(0);
@@ -58,7 +57,7 @@ public class SensorFactory extends FactoryBase {
         Command command = new Command(CMD_INPUT_DEVICE, 4);
         command.addByte(SUBCMD_GET_RAW);
         command.addByte(daisyLevel);
-        command.addByte(port.val);
+        command.addByte(port.portNum);
         command.addShortGlobalVariable(0);
         Response response = run(command, int.class);
         return response.getInt(0);
@@ -68,7 +67,7 @@ public class SensorFactory extends FactoryBase {
         Command command = new Command(CMD_INPUT_DEVICE, 4);
         command.addByte(SUBCMD_GET_RAW);
         command.addByte(daisyLevel);
-        command.addByte(port.val);
+        command.addByte(port.portNum);
         command.addShortGlobalVariable(0);
         Response response = run(command, byte.class);
         return response.getByte(0);
@@ -78,14 +77,14 @@ public class SensorFactory extends FactoryBase {
         Command command = new Command(CMD_INPUT_DEVICE, 4);
         command.addByte(SUBCMD_CLR_CHANGES);
         command.addByte(daisyLevel);
-        command.addByte(port.val);
+        command.addByte(port.portNum);
         run(command);
     }
 
     protected int getRead(int daisyChainLevel, PORT port, byte mode) throws IOException {
         Command command = new Command(CMD_INPUT_READ, 4);
         command.addByte(daisyChainLevel);
-        command.addByte(port.val);
+        command.addByte(port.portNum);
         command.addIntConstantParam(0);
         command.addByte(mode);
         command.addShortGlobalVariable(0);

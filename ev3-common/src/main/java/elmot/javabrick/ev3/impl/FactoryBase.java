@@ -1,6 +1,6 @@
 package elmot.javabrick.ev3.impl;
 
-import elmot.javabrick.ev3.EV3Brick;
+import elmot.javabrick.ev3.EV3;
 
 import java.io.IOException;
 
@@ -10,9 +10,9 @@ import java.io.IOException;
 public class FactoryBase {
     public static final int DIRECT_REPLY = 2;
     private static final int SYSTEM_REPLY = 3;
-    protected final EV3Brick brick;
+    protected final EV3 brick;
 
-    protected FactoryBase(EV3Brick brick) {
+    protected FactoryBase(EV3 brick) {
         this.brick = brick;
     }
 

@@ -1,6 +1,6 @@
 package elmot.javabrick.ev3.impl;
 
-import elmot.javabrick.ev3.EV3Brick;
+import elmot.javabrick.ev3.EV3;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class CommandBlock {
         commands.add(command);
     }
 
-    public Response run(EV3Brick brick, Class<?> outParametersTypes[]) throws IOException {
+    public Response run(EV3 brick, Class<?> ...outParametersTypes) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         baos.write(0); //here will be length
         baos.write(0);
@@ -46,7 +46,7 @@ public class CommandBlock {
         baos.write(commandType);
         baos.write(0); //here will be var count
         baos.write(0);
-        int globalVarCount = 0;// Local wars are not supported
+        int globalVarCount = 0;// Local vars are not supported
         for (Command command : commands) {
             globalVarCount += command.getReplyByteCount();
             command.writeTo(baos);

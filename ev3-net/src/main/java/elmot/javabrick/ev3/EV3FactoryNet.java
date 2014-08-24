@@ -1,6 +1,6 @@
 package elmot.javabrick.ev3;
 
-import elmot.javabrick.ev3.impl.EV3BrickNet;
+import elmot.javabrick.ev3.impl.EV3Net;
 
 import java.io.IOException;
 import java.net.*;
@@ -49,9 +49,9 @@ public class EV3FactoryNet implements AutoCloseable {
 
     private static class BrickDiscovery {
         public volatile long lastTimestamp;
-        public final EV3Brick brick;
+        public final EV3 brick;
 
-        private BrickDiscovery(EV3Brick brick, long timestamp) {
+        private BrickDiscovery(EV3 brick, long timestamp) {
             this.brick = brick;
             this.lastTimestamp = timestamp;
         }
@@ -60,7 +60,7 @@ public class EV3FactoryNet implements AutoCloseable {
     private synchronized void registerBlock(InetAddress address, int port, String serial) {
         BrickDiscovery brickDiscovery = discoveries.get(serial);
         if (brickDiscovery == null) {
-            EV3Brick brick = new EV3BrickNet(address, port, serial);
+            EV3 brick = new EV3Net(address, port, serial);
             brickDiscovery = new BrickDiscovery(brick, System.currentTimeMillis());
             discoveries.put(serial, brickDiscovery);
         } else {
@@ -78,13 +78,13 @@ public class EV3FactoryNet implements AutoCloseable {
         }
     }
 
-    public synchronized List<EV3Brick> listDiscovered() {
+    public synchronized List<EV3> listDiscovered() {
         dropExpired();
-        ArrayList<EV3Brick> ev3Bricks = new ArrayList<EV3Brick>(discoveries.size());
+        ArrayList<EV3> ev3s = new ArrayList<EV3>(discoveries.size());
         for (BrickDiscovery brickDiscovery : discoveries.values()) {
-            ev3Bricks.add(brickDiscovery.brick);
+            ev3s.add(brickDiscovery.brick);
         }
-        return ev3Bricks;
+        return ev3s;
     }
 
     @Override

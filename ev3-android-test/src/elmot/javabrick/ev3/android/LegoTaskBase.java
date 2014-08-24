@@ -4,7 +4,8 @@ import android.content.Context;
 import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.util.Log;
-import elmot.javabrick.ev3.android.usb.EV3BrickUsbAndroid;
+import com.google.zxing.Result;
+import elmot.javabrick.ev3.android.usb.EV3UsbAndroid;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
     @Override
     protected Exception doInBackground(Void... devices) {
         try {
-            EV3BrickUsbAndroid brick = new EV3BrickUsbAndroid((UsbManager) ev3Activity.getSystemService(Context.USB_SERVICE));
+            EV3UsbAndroid brick = new EV3UsbAndroid((UsbManager) ev3Activity.getSystemService(Context.USB_SERVICE));
             runBrick(brick);
         } catch (RuntimeException e) {
             return e;
@@ -29,7 +30,7 @@ public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
         return null;
     }
 
-    protected abstract void runBrick(EV3BrickUsbAndroid brick) throws IOException, InterruptedException;
+    protected abstract void runBrick(EV3UsbAndroid brick) throws IOException, InterruptedException;
 
     @Override
     protected void onPreExecute() {
@@ -76,7 +77,7 @@ public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
     /**
      * @return read barcode value or null
      */
-    protected String scanBarcode() {
-        return ev3Activity.scanBarcode();
+    protected Result getLastDecodedBarcode() {
+        return ev3Activity.getLastDecodedBarcode();
     }
 }

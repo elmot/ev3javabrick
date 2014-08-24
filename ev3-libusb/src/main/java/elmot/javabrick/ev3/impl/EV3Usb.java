@@ -1,6 +1,6 @@
 package elmot.javabrick.ev3.impl;
 
-import elmot.javabrick.ev3.EV3Brick;
+import elmot.javabrick.ev3.EV3;
 
 import javax.usb.UsbEndpoint;
 import javax.usb.UsbException;
@@ -9,13 +9,13 @@ import javax.usb.UsbPipe;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class EV3BrickUsb extends EV3Brick {
+public class EV3Usb extends EV3 {
 
     public static final int EV3_USB_BLOCK_SIZE = 1024;
     private final UsbInterface brick;
     private byte[] dataBlock = new byte[EV3_USB_BLOCK_SIZE];
 
-    public EV3BrickUsb(UsbInterface brick) {
+    public EV3Usb(UsbInterface brick) {
         this.brick = brick;
     }
 

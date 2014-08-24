@@ -8,7 +8,7 @@ import java.io.IOException;
  * @author elmot
  */
 public class HTAngleSensor extends SensorFactory {
-    public HTAngleSensor(EV3Brick brick) {
+    public HTAngleSensor(EV3 brick) {
         super(brick);
     }
 

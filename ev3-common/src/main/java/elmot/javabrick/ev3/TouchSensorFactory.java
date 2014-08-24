@@ -19,7 +19,7 @@ public class TouchSensorFactory extends SensorFactory {
         }
     }
 
-    TouchSensorFactory(EV3Brick brick) {
+    TouchSensorFactory(EV3 brick) {
         super(brick);
     }
 

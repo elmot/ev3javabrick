@@ -1,23 +1,27 @@
 package elmot.javabrick.ev3.android;
 
+import android.hardware.Camera;
+import com.google.zxing.DecodeHintType;
+
+import java.util.HashMap;
+import java.util.Map;
+
 /**
- * Created with IntelliJ IDEA.
- * User: elmot
+ * @author  elmot
  * Date: 03.08.14
- * Time: 13:45
- * To change this template use File | Settings | File Templates.
  */
 public class Constants {
     public static final String LOG_TAG = "EV3/USB";
-    public static final String ACTION_USB_DEVICE_ATTACHED = Constants.class.getPackage().getName() + ".ATTACHED";
-    public static final String SERVICE_LOG = Constants.class.getPackage().getName() + ".DETACHED";
+    public static final int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_BACK;
+
+    public static final Map<DecodeHintType, Object> BARCODE_HINTS;
+    static {
+        BARCODE_HINTS = new HashMap<DecodeHintType, Object>();
+        BARCODE_HINTS.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
+        BARCODE_HINTS.put(DecodeHintType.ALLOWED_LENGTHS, new int[]{5, 6, 7, 8});
+    }
 
     public enum MsgSource {
-        SERVICE(""), ACTIVITY("text-decoration:italic"), SYSTEM("text-weight:bold");
-        public final String STYLE;
-
-        private MsgSource(String STYLE) {
-            this.STYLE = STYLE;
-        }
+        SERVICE, ACTIVITY, SYSTEM
     }
 }

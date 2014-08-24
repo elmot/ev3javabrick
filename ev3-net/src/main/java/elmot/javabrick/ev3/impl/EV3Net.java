@@ -1,6 +1,6 @@
 package elmot.javabrick.ev3.impl;
 
-import elmot.javabrick.ev3.EV3Brick;
+import elmot.javabrick.ev3.EV3;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,9 +10,9 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public class EV3BrickNet extends EV3Brick{
+public class EV3Net extends EV3 {
 
-    public EV3BrickNet(InetAddress address, int port, String serial) {
+    public EV3Net(InetAddress address, int port, String serial) {
         super();
         this.address = address;
         this.port = port;

@@ -9,9 +9,10 @@ package elmot.javabrick.ev3;
 */
 public enum PORT {
     P1(0), P2(1), P3(2), P4(3);
-    public final int val;
 
-    PORT(int val) {
-        this.val = val;
+    public final int portNum;
+
+    PORT(int portNum) {
+        this.portNum = portNum;
     }
 }

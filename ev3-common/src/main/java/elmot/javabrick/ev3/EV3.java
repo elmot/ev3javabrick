@@ -8,7 +8,7 @@ import java.io.IOException;
 /**
  * @author elmot
  */
-public abstract class EV3Brick implements AutoCloseable {
+public abstract class EV3 implements AutoCloseable {
     public final MotorFactory MOTOR;
     public final ColorSensorFactory COLOR;
 
@@ -25,7 +25,7 @@ public abstract class EV3Brick implements AutoCloseable {
 
     public final SystemFactory SYSTEM;
 
-    public EV3Brick() {
+    public EV3() {
         MOTOR = new MotorFactory(this);
         COLOR = new ColorSensorFactory(this);
         SYSTEM = new SystemFactory(this);

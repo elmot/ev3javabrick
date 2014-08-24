@@ -13,7 +13,7 @@ public class CommonSensorFactory extends SensorFactory {
         return readRaw(daisyChainLevel, port);
     }
 
-    CommonSensorFactory(EV3Brick brick) {
+    CommonSensorFactory(EV3 brick) {
         super(brick);
     }
 

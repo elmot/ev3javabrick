@@ -24,7 +24,7 @@ public class SoundSensorFactory extends SensorFactory {
         }
     }
 
-    SoundSensorFactory(EV3Brick brick) {
+    SoundSensorFactory(EV3 brick) {
         super(brick);
     }
 

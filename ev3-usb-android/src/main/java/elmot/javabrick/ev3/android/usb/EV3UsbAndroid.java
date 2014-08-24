@@ -2,22 +2,21 @@ package elmot.javabrick.ev3.android.usb;
 
 import android.hardware.usb.*;
 import android.util.Log;
-import elmot.javabrick.ev3.EV3Brick;
+import elmot.javabrick.ev3.EV3;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.HashMap;
 import java.util.Map;
 
-public class EV3BrickUsbAndroid extends EV3Brick {
+public class EV3UsbAndroid extends EV3 {
     public static final String LOG_TAG = "USB/EV3";
     private UsbDevice usbDevice;
     private final UsbManager usbManager;
 
     public static final int EV3_BLOCK_SIZE = 1024;
 
-    public EV3BrickUsbAndroid(UsbManager usbManager) {
+    public EV3UsbAndroid(UsbManager usbManager) {
         this.usbManager = usbManager;
     }
 

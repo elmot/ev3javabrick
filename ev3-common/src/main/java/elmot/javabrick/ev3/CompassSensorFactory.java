@@ -13,7 +13,7 @@ public class CompassSensorFactory extends SensorFactory {
         return readRaw(daisyChainLevel, port)*2;
     }
 
-    CompassSensorFactory(EV3Brick brick) {
+    CompassSensorFactory(EV3 brick) {
         super(brick);
     }
 

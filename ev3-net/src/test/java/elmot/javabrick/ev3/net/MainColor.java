@@ -1,7 +1,7 @@
 package elmot.javabrick.ev3.net;
 
 import elmot.javabrick.ev3.ColorSensorFactory;
-import elmot.javabrick.ev3.EV3Brick;
+import elmot.javabrick.ev3.EV3;
 import elmot.javabrick.ev3.PORT;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -18,29 +18,29 @@ public class MainColor {
     @Ignore
     @Test
     public void doTest() throws IOException, InterruptedException {
-        EV3Brick ev3Brick = EV3Base.openBlock();
-        ev3Brick.COLOR.setMode(0, PORT.P1, COLOR_MODE.NXT_BLUE);
+        EV3 ev3 = EV3Base.openBlock();
+        ev3.COLOR.setMode(0, PORT.P1, COLOR_MODE.NXT_BLUE);
         Thread.sleep(3000);
-        ev3Brick.COLOR.setMode(0, PORT.P1, ColorSensorFactory.COLOR_MODE.NXT_GREEN);
+        ev3.COLOR.setMode(0, PORT.P1, ColorSensorFactory.COLOR_MODE.NXT_GREEN);
         Thread.sleep(3000);
 /*
-        ev3Brick.COLOR.setMode(PORT.P1, COLOR_MODE.AMBIENT);
+        ev3.COLOR.setMode(PORT.P1, COLOR_MODE.AMBIENT);
         for(int i = 0; i < 1000; i++)
         {
-            System.out.println("Ambient: " + ev3Brick.COLOR.getValue(PORT.P1));
+            System.out.println("Ambient: " + ev3.COLOR.getValue(PORT.P1));
         }
-        ev3Brick.COLOR.setMode(PORT.P1, COLOR_MODE.REFLECTION);
+        ev3.COLOR.setMode(PORT.P1, COLOR_MODE.REFLECTION);
         for(int i = 0; i < 1000; i++)
         {
-            System.out.println("REFLECTION: " + ev3Brick.COLOR.getValue(PORT.P1));
+            System.out.println("REFLECTION: " + ev3.COLOR.getValue(PORT.P1));
         }
 */
-        ev3Brick.COLOR.setMode(0, PORT.P1, ColorSensorFactory.COLOR_MODE.COLOR);
+        ev3.COLOR.setMode(0, PORT.P1, ColorSensorFactory.COLOR_MODE.COLOR);
         for (int i = 0; i < 1000; i++) {
-            COLOR color = ev3Brick.COLOR.getColor(PORT.P1);
+            COLOR color = ev3.COLOR.getColor(PORT.P1);
             System.out.println("color = " + color);
         }
-        ev3Brick.COLOR.stopAll(0);
+        ev3.COLOR.stopAll(0);
     }
 
 

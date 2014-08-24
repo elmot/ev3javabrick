@@ -13,7 +13,7 @@ public class TempSensorFactory extends SensorFactory {
         return readRaw(daisyChainLevel, port) / 256.0f;
     }
 
-    TempSensorFactory(EV3Brick brick) {
+    TempSensorFactory(EV3 brick) {
         super(brick);
     }
 }

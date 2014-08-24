@@ -1,7 +1,9 @@
 package elmot.javabrick.ev3.android;
 
+import com.google.zxing.Result;
+import com.google.zxing.ResultPoint;
 import elmot.javabrick.ev3.PORT;
-import elmot.javabrick.ev3.android.usb.EV3BrickUsbAndroid;
+import elmot.javabrick.ev3.android.usb.EV3UsbAndroid;
 
 import java.io.IOException;
 
@@ -11,7 +13,7 @@ public class LegoTask extends LegoTaskBase {
         super(ev3Activity);
     }
 
-    protected void runBrick(EV3BrickUsbAndroid brick) throws IOException, InterruptedException {
+    protected void runBrick(EV3UsbAndroid brick) throws IOException, InterruptedException {
         showProgress("Tone play");
         brick.SYSTEM.playTone(50, 330, 300);
         showProgress("Tone played");
@@ -46,9 +48,18 @@ public class LegoTask extends LegoTaskBase {
 */
         for (int i = 0; i < 1000; i++) {
             float read = brick.IR.readProximity(0, PORT.P4);
-            Thread.sleep(500);
+            Thread.sleep(200);
             showProgress("Proximity: " + read);
-            showProgress("Found barcode: " + scanBarcode());
+            Result lastDecodedBarcode = getLastDecodedBarcode();
+            if (lastDecodedBarcode != null && (System.currentTimeMillis() - lastDecodedBarcode.getTimestamp()) < 500) {
+                String message = "Found barcode: " + lastDecodedBarcode.getText();
+                ResultPoint[] resultPoints = lastDecodedBarcode.getResultPoints();
+                if (resultPoints != null && resultPoints.length == 2) {
+                    message+= "; Size: " + ResultPoint.distance(resultPoints[0], resultPoints[1]);
+                }
+                showProgress(message);
+
+            }
         }
         showProgress("Finish");
     }

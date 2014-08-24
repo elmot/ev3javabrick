@@ -28,8 +28,9 @@ public class IRSensorFactory extends SensorFactory {
         setMode(daisyChainLevel, port, mode.val);
     }
 
-    IRSensorFactory(EV3Brick brick) {
-        super(brick);
+    IRSensorFactory(EV3 ev3)
+    {
+        super(ev3);
     }
 
     public int readProximity(int daisyChainLevel, PORT port) throws IOException {

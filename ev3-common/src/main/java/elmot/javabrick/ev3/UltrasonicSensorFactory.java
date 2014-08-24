@@ -29,7 +29,7 @@ public class UltrasonicSensorFactory extends SensorFactory {
         }
     }
 
-    UltrasonicSensorFactory(EV3Brick brick) {
+    UltrasonicSensorFactory(EV3 brick) {
         super(brick);
     }
 

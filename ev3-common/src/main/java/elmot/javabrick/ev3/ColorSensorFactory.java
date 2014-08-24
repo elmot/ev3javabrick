@@ -59,7 +59,7 @@ public class ColorSensorFactory extends SensorFactory {
         }
     }
 
-    ColorSensorFactory(EV3Brick brick) {
+    ColorSensorFactory(EV3 brick) {
         super(brick);
     }
 

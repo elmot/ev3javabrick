@@ -17,8 +17,9 @@ public class SystemFactory extends FactoryBase{
     private static final int SUBCMD_TONE = 1;
     private static final int SUBCMD_GET_VBATT = 1;
     private static final int SUBCMD_GET_IBATT = 2;
-    SystemFactory(EV3Brick brick) {
-        super(brick);
+
+    SystemFactory(EV3 ev3) {
+        super(ev3);
     }
 
     public void playTone(int volume, int frequency, int durationMs) throws IOException {
