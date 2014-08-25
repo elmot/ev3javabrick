@@ -182,4 +182,10 @@ public class Ev3Activity extends Activity {
     public Result getLastDecodedBarcode() {
         return cameraPreview.getLastDecoded();
     }
+
+    public Result scanPreciseBarcode() {
+        return cameraPreview.scanPreciseBarcode();
+    }
+
+
 }

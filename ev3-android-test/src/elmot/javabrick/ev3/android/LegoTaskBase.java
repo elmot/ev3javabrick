@@ -2,6 +2,8 @@ package elmot.javabrick.ev3.android;
 
 import android.content.Context;
 import android.hardware.usb.UsbManager;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.util.Log;
 import com.google.zxing.Result;
@@ -79,5 +81,14 @@ public abstract class LegoTaskBase extends AsyncTask<Void, String, Exception> {
      */
     protected Result getLastDecodedBarcode() {
         return ev3Activity.getLastDecodedBarcode();
+    }
+
+    protected synchronized Result scanPreciseBarcode() {
+        return ev3Activity.scanPreciseBarcode();
+    }
+
+    protected void beep() {
+        ToneGenerator toneG = new ToneGenerator(AudioManager.STREAM_ALARM, 100);
+        toneG.startTone(ToneGenerator.TONE_PROP_BEEP2, 200);
     }
 }

@@ -46,22 +46,35 @@ public class LegoTask extends LegoTaskBase {
         brick.MOTOR.stop(MotorFactory.MOTORSET.A, MotorFactory.BRAKE.COAST);
         brick.SYSTEM.playTone(50, 140, 1300);
 */
-        for (int i = 0; i < 1000; i++) {
+        long lastBarcodeTime = 0;
+        for (int i = 0; i < 10000; i++) {
             float read = brick.IR.readProximity(0, PORT.P4);
             Thread.sleep(200);
             showProgress("Proximity: " + read);
             Result lastDecodedBarcode = getLastDecodedBarcode();
-            if (lastDecodedBarcode != null && (System.currentTimeMillis() - lastDecodedBarcode.getTimestamp()) < 500) {
-                String message = "Found barcode: " + lastDecodedBarcode.getText();
-                ResultPoint[] resultPoints = lastDecodedBarcode.getResultPoints();
-                if (resultPoints != null && resultPoints.length == 2) {
-                    message+= "; Size: " + ResultPoint.distance(resultPoints[0], resultPoints[1]);
-                }
-                showProgress(message);
 
+            if (lastDecodedBarcode != null && lastBarcodeTime != lastDecodedBarcode.getTimestamp()) {
+                lastBarcodeTime = lastDecodedBarcode.getTimestamp();
+                beep();
+                showBarcode("Found barcode: ", lastDecodedBarcode);
+                Result result = scanPreciseBarcode();
+                if (result != null) {
+                    beep();
+                    showBarcode("Found precision barcode: ", result);
+                }
             }
         }
         showProgress("Finish");
+    }
+
+    private void showBarcode(String msg, Result barcode) throws InterruptedException {
+        if (barcode == null) return;
+        String message = msg + barcode.getText();
+        ResultPoint[] resultPoints = barcode.getResultPoints();
+        if (resultPoints != null && resultPoints.length == 2) {
+            message += "; bounds: " + resultPoints[0].toString() + " - " + resultPoints[1].toString();
+        }
+        showProgress(message);
     }
 
 }

@@ -1,6 +1,9 @@
 package elmot.javabrick.barcode;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -42,6 +45,28 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             CameraConfigurationUtils.setBestExposure(parameters, false);
             CameraConfigurationUtils.setMetering(parameters);
             CameraConfigurationUtils.setVideoStabilization(parameters);
+            CameraConfigurationUtils.setFocus(parameters, true, false, true);
+            Camera.Size biggestSize = null;
+
+            for (Camera.Size size : parameters.getSupportedPreviewSizes()) {
+                if (biggestSize == null || biggestSize.width < size.width)
+                    biggestSize = size;
+            }
+            if (biggestSize != null) {
+                parameters.setPreviewSize(biggestSize.width, biggestSize.height);
+            }
+
+            for (Camera.Size size : parameters.getSupportedPictureSizes()) {
+                if (biggestSize == null || biggestSize.width < size.width)
+                    biggestSize = size;
+            }
+            if (biggestSize != null) {
+                parameters.setPictureSize(biggestSize.width, biggestSize.height);
+            }
+            for (Integer pictureFormat : parameters.getSupportedPictureFormats()) {
+                if (pictureFormat == ImageFormat.NV21)
+                    parameters.setPictureFormat(ImageFormat.NV21);
+            }
             c.setParameters(parameters);
         } catch (Exception e) {
             // Camera is not available (in use or does not exist)
@@ -100,20 +125,39 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
-/*
+    private final Object lock = new Object();
+
     public BinaryBitmap getCameraImage() {
-        final Object lock = new Object();
-        final byte[][] dataResult = {null};
+        final BinaryBitmap[] dataResult = {null};
         mCamera.lock();
-        mCamera.takePicture(null, null, new Camera.PictureCallback() {
-            @Override
-            public void onPictureTaken(byte[] data, Camera camera) {
-                synchronized (lock) {
-                    dataResult[0] = data;
-                    lock.notify();
+        mCamera.takePicture(null, new Camera.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] data, Camera camera) {
+                        if (data == null) return;
+                        Camera.Parameters parameters = camera.getParameters();
+                        Camera.Size pictureSize = parameters.getPictureSize();
+                        LuminanceSource luminanceSource;
+                        luminanceSource = new PlanarYUVLuminanceSource(data, pictureSize.width, pictureSize.height, 0, 0, pictureSize.width, pictureSize.height, false);
+                        dataResult[0] = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+                    }
+                }, null,
+                new Camera.PictureCallback() {
+                    @Override
+                    public void onPictureTaken(byte[] data, Camera camera) {
+                        synchronized (lock) {
+                            if (dataResult[0] == null) {
+                                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                                int width = bitmap.getWidth();
+                                int height = bitmap.getHeight();
+                                int[] imageARGB = new int[width * height];
+                                bitmap.getPixels(imageARGB, 0, width, 0, 0, width, height);
+                                LuminanceSource luminanceSource = new RGBLuminanceSource(width, height, imageARGB);
+                                dataResult[0] = new BinaryBitmap(new HybridBinarizer(luminanceSource));
+                            }
+                            lock.notify();
+                        }
+                    }
                 }
-            }
-        }
         );
 
         synchronized (lock) {
@@ -126,17 +170,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
         }
         startPreview();
-
-        Bitmap bitmap = BitmapFactory.decodeByteArray(dataResult[0], 0, dataResult[0].length);
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
-        int[] imageARGB = new int[width * height];
-        bitmap.getPixels(imageARGB, 0, width, 0, 0, width, height);
-        LuminanceSource luminanceSource = new RGBLuminanceSource(width, height, imageARGB);
-        return new BinaryBitmap(new HybridBinarizer(luminanceSource));
+        return dataResult[0];
     }
 
-*/
     private void startPreview() {
         mCamera.startPreview();
         mCamera.setPreviewCallback(
@@ -146,9 +182,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                         Camera.Size previewSize = camera.getParameters().getPreviewSize();
                         LuminanceSource luminanceSource = new PlanarYUVLuminanceSource(data, previewSize.width, previewSize.height, 0, 0, previewSize.width, previewSize.height, false);
                         Log.i(Constants.LOG_TAG, "Camera data: " + camera.getParameters().flatten());
-                        Result decode = null;
                         try {
-                            decode = barCodeReader.decode(new BinaryBitmap(new HybridBinarizer(luminanceSource)), Constants.BARCODE_HINTS);
+                            Result decode = barCodeReader.decode(new BinaryBitmap(new HybridBinarizer(luminanceSource)), Constants.BARCODE_HINTS);
                             lastDecoded = decode;
                             Log.d(Constants.LOG_TAG, "Barcode: " + decode);
                         } catch (Exception ignored) {
@@ -158,30 +193,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         );
     }
 
-/*
-    */
-/**
+    /**
      * @return read barcode value or null
-     *//*
+     */
 
-    public synchronized String scanBarcode() {
+    public synchronized Result scanPreciseBarcode() {
         try {
-            Result decode = barCodeReader.decode(getCameraImage(), BARCODE_HINTS);
+            Result decode = barCodeReader.decode(getCameraImage());
             String text = decode.getText();
-            Log.i(Constants.LOG_TAG, "Barcode: " + text);
-            return text;
-        } catch (NotFoundException e) {
+            String msg = "Barcode: " + text;
+            ResultPoint[] resultPoints = decode.getResultPoints();
+            if (resultPoints != null && resultPoints.length == 2) {
+                msg += "; bounds: " + resultPoints[0].toString() + resultPoints[1].toString();
+            }
+            Log.d(Constants.LOG_TAG, msg);
+            return decode;
+        } catch (Exception ignored) {
             Log.d(Constants.LOG_TAG, "Barcode is not found");
-            return null;
-        } catch (ChecksumException e) {
-            Log.i(Constants.LOG_TAG, "Barcode checksum error");
-            return null;
-        } catch (FormatException e) {
-            Log.i(Constants.LOG_TAG, "Barcode format error");
             return null;
         }
     }
-*/
 
     public Result getLastDecoded() {
         return lastDecoded;
