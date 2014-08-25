@@ -3,11 +3,10 @@ package elmot.ros.android;
 import android.hardware.usb.UsbManager;
 import elmot.javabrick.ev3.MotorFactory;
 import elmot.javabrick.ev3.PORT;
-import elmot.javabrick.ev3.android.usb.EV3BrickUsbAndroid;
+import elmot.javabrick.ev3.android.usb.EV3UsbAndroid;
 import geometry_msgs.TransformStamped;
 import geometry_msgs.Twist;
 import nav_msgs.Odometry;
-import org.jboss.netty.buffer.ChannelBuffer;
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
 import org.ros.node.AbstractNodeMain;
@@ -27,13 +26,11 @@ import java.util.concurrent.TimeUnit;
  *         Date: 15.08.14
  */
 
-//TODO odometry publisher
-
 class Ev3Node extends AbstractNodeMain {
 
     private final UsbManager usbManager;
     private ConnectedNode connectedNode;
-    private EV3BrickUsbAndroid brick;
+    private EV3UsbAndroid brick;
     private Publisher<Float32> irPublisher;
     private Publisher<Float32> voltagePublisher;
     private Publisher<Odometry> odometryPublisher;
@@ -53,7 +50,7 @@ class Ev3Node extends AbstractNodeMain {
     public void onStart(ConnectedNode connectedNode) {
         this.connectedNode = connectedNode;
         super.onStart(connectedNode);
-        brick = new EV3BrickUsbAndroid(usbManager);
+        brick = new EV3UsbAndroid(usbManager);
         clamp(false);
 
         odoComputer = new OdoComputer(1.7, 14.3, connectedNode.getCurrentTime());
