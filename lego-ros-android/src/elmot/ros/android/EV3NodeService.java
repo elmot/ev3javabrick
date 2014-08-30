@@ -9,6 +9,8 @@ import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
 import elmot.javabrick.ev3.android.usb.EV3UsbAndroid;
+import elmot.ros.ev3.Ev3Node;
+import elmot.ros.ev3.Settings;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMainExecutor;
@@ -43,12 +45,13 @@ public class EV3NodeService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        UsbDevice device = EV3UsbAndroid.findDevice((UsbManager) getSystemService(USB_SERVICE));
+        UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
+        UsbDevice device = EV3UsbAndroid.findDevice(usbManager);
         if (device != null) {
             Notification notification = new Notification(R.drawable.ic_ev3_logo, "EV3 ROS Node", System.currentTimeMillis());
             notification.setLatestEventInfo(this, "EV3 ROS Node", "Started", null);
             startForeground(R.drawable.ic_ev3_logo, notification);
-            ev3Node = new Ev3Node((UsbManager) getSystemService(USB_SERVICE));
+            ev3Node = new Ev3Node(new EV3UsbAndroid(usbManager));
             NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(Settings.ownIpAddress());
             NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
             nodeMainExecutor.execute(ev3Node, nodeConfiguration);

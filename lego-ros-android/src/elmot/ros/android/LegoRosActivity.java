@@ -10,6 +10,7 @@ import android.view.SurfaceView;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import elmot.ros.android.hardware.CameraPreview;
+import elmot.ros.ev3.Settings;
 import org.jboss.netty.buffer.LittleEndianHeapChannelBuffer;
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;

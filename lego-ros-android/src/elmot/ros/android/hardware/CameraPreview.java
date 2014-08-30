@@ -4,7 +4,7 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import elmot.ros.android.Settings;
+import elmot.ros.ev3.Settings;
 
 import java.io.IOException;
 

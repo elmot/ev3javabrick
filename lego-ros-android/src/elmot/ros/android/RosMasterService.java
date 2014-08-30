@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
+import elmot.ros.ev3.Settings;
 import org.apache.commons.logging.LogFactory;
 import org.ros.RosCore;
 

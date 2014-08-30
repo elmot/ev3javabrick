@@ -1,9 +1,8 @@
-package elmot.ros.android;
+package elmot.ros.ev3;
 
-import android.hardware.usb.UsbManager;
+import elmot.javabrick.ev3.EV3;
 import elmot.javabrick.ev3.MotorFactory;
 import elmot.javabrick.ev3.PORT;
-import elmot.javabrick.ev3.android.usb.EV3UsbAndroid;
 import geometry_msgs.TransformStamped;
 import geometry_msgs.Twist;
 import nav_msgs.Odometry;
@@ -26,19 +25,18 @@ import java.util.concurrent.TimeUnit;
  *         Date: 15.08.14
  */
 
-class Ev3Node extends AbstractNodeMain {
+public class Ev3Node extends AbstractNodeMain {
 
-    private final UsbManager usbManager;
     private ConnectedNode connectedNode;
-    private EV3UsbAndroid brick;
+    private EV3 brick;
     private Publisher<Float32> irPublisher;
     private Publisher<Float32> voltagePublisher;
     private Publisher<Odometry> odometryPublisher;
     private Publisher<TransformStamped> tfPublisher;
     private OdoComputer odoComputer;
 
-    Ev3Node(UsbManager usbManager) {
-        this.usbManager = usbManager;
+    public Ev3Node(EV3 brick) {
+        this.brick = brick;
     }
 
     @Override
@@ -50,7 +48,7 @@ class Ev3Node extends AbstractNodeMain {
     public void onStart(ConnectedNode connectedNode) {
         this.connectedNode = connectedNode;
         super.onStart(connectedNode);
-        brick = new EV3UsbAndroid(usbManager);
+
         clamp(false);
 
         odoComputer = new OdoComputer(1.7, 14.3, connectedNode.getCurrentTime());

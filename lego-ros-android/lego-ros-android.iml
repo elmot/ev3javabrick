@@ -35,6 +35,7 @@
     <orderEntry type="module" module-name="ev3-usb-android" exported="" />
     <orderEntry type="module" module-name="ev3-common" exported="" />
     <orderEntry type="library" name="geometry_msgs-1.10.2" level="project" />
+    <orderEntry type="module" module-name="ros-ev3-node" exported="" />
   </component>
 </module>
 

@@ -24,7 +24,8 @@
         <module>ev3-net</module>
         <module>ev3-libusb</module>
         <module>ev3-usb-android</module>
-        <module>ros-master</module>
+        <module>ros-ev3-node</module>
+        <module>elmot-stick-ros</module>
     </modules>
     <dependencies>
         <dependency>

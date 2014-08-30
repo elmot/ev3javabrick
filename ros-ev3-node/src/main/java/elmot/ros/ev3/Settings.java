@@ -1,6 +1,5 @@
-package elmot.ros.android;
+package elmot.ros.ev3;
 
-import android.hardware.Camera;
 import org.ros.namespace.GraphName;
 
 import java.net.InetAddress;
@@ -19,7 +18,19 @@ public class Settings {
     private Settings() {
     }
 
-    public static final int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_FRONT;
+    /**
+     * The facing of the camera is opposite to that of the screen.
+     */
+    @SuppressWarnings("UnusedDeclaration")
+    public static final int CAMERA_FACING_BACK = 0;
+
+    /**
+     * The facing of the camera is the same as that of the screen.
+     */
+
+    public static final int CAMERA_FACING_FRONT = 1;
+
+    public static final int CAMERA_FACING = CAMERA_FACING_FRONT;
 //    public static final int CAMERA_FACING = Camera.CameraInfo.CAMERA_FACING_BACK;
     public static final int CAMERA_LOOP_MS = 2000;
     public static final int SAMPLING_LOOP_MS = 200;
