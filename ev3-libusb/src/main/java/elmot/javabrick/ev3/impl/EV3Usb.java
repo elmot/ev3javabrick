@@ -6,10 +6,12 @@ import javax.usb.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.logging.Logger;
 
 public class EV3Usb extends EV3 implements UsbInterfacePolicy {
 
     public static final int EV3_USB_BLOCK_SIZE = 1024;
+    public static final Logger LOGGER = Logger.getLogger(EV3Usb.class.getName());
     private final UsbInterface brick;
     private byte[] dataBlock = new byte[EV3_USB_BLOCK_SIZE];
 
@@ -42,7 +44,7 @@ public class EV3Usb extends EV3 implements UsbInterfacePolicy {
                 UsbPipe pipeOut = endpointOut.getUsbPipe();
                 pipeOut.open();
                 command.rewind();
-                command.get(dataBlock);
+                command.get(dataBlock,0,command.limit());
                 try {
                     pipeOut.syncSubmit(dataBlock);
                 } finally {
@@ -50,11 +52,22 @@ public class EV3Usb extends EV3 implements UsbInterfacePolicy {
                 }
                 pipeIn.open();
                 try {
-                    pipeIn.syncSubmit(dataBlock);
-                    int length = 2 + (0xff & (int) dataBlock[0]) + (dataBlock[1] << 8);
-                    ByteBuffer response = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
-                    response.put(dataBlock, 0, length);
-                    return response;
+                    while (true) {
+                        pipeIn.syncSubmit(dataBlock);
+                        int length = 2 + (0xff & (int) dataBlock[0]) + (dataBlock[1] << 8);
+                        ByteBuffer response = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
+                        response.put(dataBlock, 0, length);
+                        if (length < 3 || length > 1022) {
+                            LOGGER.warning("Extra response in queue");
+                            continue;
+                        }
+                        int readSeqNo = response.getShort(2);
+                        if (readSeqNo < expectedSeqNo) {
+                            LOGGER.warning("Resynch EV3 seq no");
+                            continue;
+                        }
+                        return response;
+                    }
                 } finally {
                     pipeIn.close();
                 }
