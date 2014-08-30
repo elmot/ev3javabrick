@@ -4,6 +4,7 @@ import elmot.javabrick.ev3.impl.CommandBlock;
 import elmot.javabrick.ev3.impl.Response;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 /**
  * @author elmot
@@ -51,6 +52,6 @@ public abstract class EV3 implements AutoCloseable {
         return commandBlock.run(this, commandParameters);
     }
 
-    public abstract byte[] dataExchange(byte[] bytes) throws IOException;
+    public abstract ByteBuffer dataExchange(ByteBuffer bytes, int expectedSeqNo) throws IOException;
 
 }

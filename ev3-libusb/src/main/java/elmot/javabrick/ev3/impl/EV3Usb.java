@@ -2,14 +2,12 @@ package elmot.javabrick.ev3.impl;
 
 import elmot.javabrick.ev3.EV3;
 
-import javax.usb.UsbEndpoint;
-import javax.usb.UsbException;
-import javax.usb.UsbInterface;
-import javax.usb.UsbPipe;
+import javax.usb.*;
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
-public class EV3Usb extends EV3 {
+public class EV3Usb extends EV3 implements UsbInterfacePolicy {
 
     public static final int EV3_USB_BLOCK_SIZE = 1024;
     private final UsbInterface brick;
@@ -29,16 +27,22 @@ public class EV3Usb extends EV3 {
     }
 
     @Override
-    public synchronized byte[] dataExchange(byte[] command) throws IOException {
+    public boolean forceClaim(UsbInterface usbInterface) {
+        return true;
+    }
+
+    @Override
+    public ByteBuffer dataExchange(ByteBuffer command, int expectedSeqNo) throws IOException {
         try {
-            brick.claim();
+            brick.claim(this);
             try {
                 UsbEndpoint endpointIn = brick.getUsbEndpoint((byte) 0x81);
                 UsbEndpoint endpointOut = brick.getUsbEndpoint((byte) 0x1);
                 UsbPipe pipeIn = endpointIn.getUsbPipe();
                 UsbPipe pipeOut = endpointOut.getUsbPipe();
                 pipeOut.open();
-                System.arraycopy(command, 0, dataBlock, 0, command.length);
+                command.rewind();
+                command.get(dataBlock);
                 try {
                     pipeOut.syncSubmit(dataBlock);
                 } finally {
@@ -48,7 +52,9 @@ public class EV3Usb extends EV3 {
                 try {
                     pipeIn.syncSubmit(dataBlock);
                     int length = 2 + (0xff & (int) dataBlock[0]) + (dataBlock[1] << 8);
-                    return Arrays.copyOfRange(dataBlock, 0, length);
+                    ByteBuffer response = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
+                    response.put(dataBlock, 0, length);
+                    return response;
                 } finally {
                     pipeIn.close();
                 }

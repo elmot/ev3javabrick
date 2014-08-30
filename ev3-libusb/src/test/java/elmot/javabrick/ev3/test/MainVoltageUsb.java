@@ -1,4 +1,4 @@
-package elmot.javabrick.ev3.libusb;
+package elmot.javabrick.ev3.test;
 
 import elmot.javabrick.ev3.EV3;
 import elmot.javabrick.ev3.EV3FactoryUsb;

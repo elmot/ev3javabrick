@@ -40,7 +40,7 @@ public class EV3UsbAndroid extends EV3 {
     }
 
     @Override
-    public byte[] dataExchange(byte[] cmd) throws IOException {
+    public ByteBuffer dataExchange(ByteBuffer cmd, int expectedSeqNo) throws IOException {
         UsbInterface anInterface = usbDevice.getInterface(0);
         UsbEndpoint in = null;
         UsbEndpoint out = null;
@@ -63,7 +63,6 @@ public class EV3UsbAndroid extends EV3 {
                 ByteBuffer outBuffer = ByteBuffer.allocate(EV3_BLOCK_SIZE).order(ByteOrder.LITTLE_ENDIAN);
                 UsbRequest outRequest = new UsbRequest();
                 outBuffer.put(cmd);
-                int seqNo = outBuffer.getShort(2);
                 if (!outRequest.initialize(conn, out))
                     throw new IOException("Can not initialize OUT request");
                 try {
@@ -97,14 +96,14 @@ public class EV3UsbAndroid extends EV3 {
                             continue;
                         }
                         int readSeqNo = inBuffer.getShort(2);
-                        if(readSeqNo <seqNo)
+                        if(readSeqNo < expectedSeqNo)
                         {
                             Log.w(LOG_TAG, "Resynch EV3 seq no", new IOException());
                             continue;
                         }
                         byte[] result = new byte[length + 2];
                         inBuffer.get(result);
-                        return result;
+                        return (ByteBuffer) inBuffer.limit(length + 2);
                     } finally {
                         inRequest.close();
                     }
