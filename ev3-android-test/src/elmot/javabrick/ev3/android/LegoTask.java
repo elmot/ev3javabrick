@@ -2,6 +2,7 @@ package elmot.javabrick.ev3.android;
 
 import com.google.zxing.Result;
 import com.google.zxing.ResultPoint;
+import elmot.javabrick.ev3.MotorFactory;
 import elmot.javabrick.ev3.PORT;
 import elmot.javabrick.ev3.android.usb.EV3UsbAndroid;
 
@@ -17,7 +18,6 @@ public class LegoTask extends LegoTaskBase {
         showProgress("Tone play");
         brick.SYSTEM.playTone(50, 330, 300);
         showProgress("Tone played");
-/*
 
         brick.MOTOR.direction(MotorFactory.MOTORSET.A, MotorFactory.DIR.FORWARD);
         brick.MOTOR.powerTime(0, MotorFactory.MOTORSET.A, -50, 0, 1000, 0, MotorFactory.BRAKE.COAST);
@@ -45,7 +45,7 @@ public class LegoTask extends LegoTaskBase {
 
         brick.MOTOR.stop(MotorFactory.MOTORSET.A, MotorFactory.BRAKE.COAST);
         brick.SYSTEM.playTone(50, 140, 1300);
-*/
+/*
         long lastBarcodeTime = 0;
         for (int i = 0; i < 10000; i++) {
             float read = brick.IR.readProximity(0, PORT.P4);
@@ -64,6 +64,7 @@ public class LegoTask extends LegoTaskBase {
                 }
             }
         }
+*/
         showProgress("Finish");
     }
 

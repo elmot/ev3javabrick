@@ -8,7 +8,8 @@
               android:stretchColumns="true"
               android:longClickable="true"
               android:rowCount="3"
-              android:columnCount="3">
+              android:columnCount="3"
+              android:keepScreenOn="true">
 
     <LinearLayout
             android:orientation="horizontal"

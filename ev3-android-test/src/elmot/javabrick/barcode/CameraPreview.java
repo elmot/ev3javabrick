@@ -130,30 +130,18 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     public BinaryBitmap getCameraImage() {
         final BinaryBitmap[] dataResult = {null};
         mCamera.lock();
-        mCamera.takePicture(null, new Camera.PictureCallback() {
-                    @Override
-                    public void onPictureTaken(byte[] data, Camera camera) {
-                        if (data == null) return;
-                        Camera.Parameters parameters = camera.getParameters();
-                        Camera.Size pictureSize = parameters.getPictureSize();
-                        LuminanceSource luminanceSource;
-                        luminanceSource = new PlanarYUVLuminanceSource(data, pictureSize.width, pictureSize.height, 0, 0, pictureSize.width, pictureSize.height, false);
-                        dataResult[0] = new BinaryBitmap(new HybridBinarizer(luminanceSource));
-                    }
-                }, null,
+        mCamera.takePicture(null, null, null,
                 new Camera.PictureCallback() {
                     @Override
                     public void onPictureTaken(byte[] data, Camera camera) {
                         synchronized (lock) {
-                            if (dataResult[0] == null) {
-                                Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-                                int width = bitmap.getWidth();
-                                int height = bitmap.getHeight();
-                                int[] imageARGB = new int[width * height];
-                                bitmap.getPixels(imageARGB, 0, width, 0, 0, width, height);
-                                LuminanceSource luminanceSource = new RGBLuminanceSource(width, height, imageARGB);
-                                dataResult[0] = new BinaryBitmap(new HybridBinarizer(luminanceSource));
-                            }
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+                            int width = bitmap.getWidth();
+                            int height = bitmap.getHeight();
+                            int[] imageARGB = new int[width * height];
+                            bitmap.getPixels(imageARGB, 0, width, 0, 0, width, height);
+                            LuminanceSource luminanceSource = new RGBLuminanceSource(width, height, imageARGB);
+                            dataResult[0] = new BinaryBitmap(new HybridBinarizer(luminanceSource));
                             lock.notify();
                         }
                     }
