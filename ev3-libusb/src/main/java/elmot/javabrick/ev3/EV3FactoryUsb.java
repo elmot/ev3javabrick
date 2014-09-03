@@ -29,9 +29,13 @@ public class EV3FactoryUsb {
     public EV3FactoryUsb() throws SocketException {
     }
 
-    static public synchronized List<EV3> listDiscovered() throws UsbException {
+    static public synchronized List<EV3> listDiscovered() {
         ArrayList<EV3> ev3s = new ArrayList<EV3>();
-        findDevices(UsbHostManager.getUsbServices().getRootUsbHub(), (short) 0x0694, (short) 0x0005, ev3s);
+        try {
+            findDevices(UsbHostManager.getUsbServices().getRootUsbHub(), (short) 0x0694, (short) 0x0005, ev3s);
+        } catch (UsbException e) {
+            throw new RuntimeException(e);
+        }
         return ev3s;
     }
 
