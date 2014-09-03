@@ -34,6 +34,7 @@ public class Ev3Node extends AbstractNodeMain {
     private Publisher<Odometry> odometryPublisher;
     private Publisher<TransformStamped> tfPublisher;
     private OdoComputer odoComputer;
+    private Publisher<Float32> consumptionPublisher;
 
     public Ev3Node(EV3 brick) {
         this.brick = brick;
@@ -55,6 +56,7 @@ public class Ev3Node extends AbstractNodeMain {
 
         irPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("ir_distance"), Float32._TYPE);
         voltagePublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("voltage"), Float32._TYPE);
+        consumptionPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("consumption"), Float32._TYPE);
         odometryPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("odom"), Odometry._TYPE);
         tfPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("tf"), TransformStamped._TYPE);
 
@@ -70,10 +72,16 @@ public class Ev3Node extends AbstractNodeMain {
         motorSpeedSubscriber.addMessageListener(new MessageListener<Twist>() {
             @Override
             public void onNewMessage(Twist msg) {
-                double speed = msg.getLinear().getX() * 100;
-                double twist = msg.getAngular().getZ() * 100 / Math.PI;
+                double x = msg.getLinear().getX();
+                double y = msg.getAngular().getZ();
+                if (Math.abs(x) < 0.02) x = 0;
+                if (Math.abs(y) < 0.02) y = 0;
+                double s = x < 0 ? -1 : 1;
+                double speed = Math.sqrt(x * x + y * y) / Math.sqrt(2);
+                double twist = -200 * y / speed;
+                speed *= 100 * s;
                 try {
-                    brick.MOTOR.timeSync(0, MotorFactory.MOTORSET.BC, (int)speed, (int) twist, 1000, MotorFactory.BRAKE.COAST);
+                    brick.MOTOR.timeSync(0, MotorFactory.MOTORSET.BC, (int) speed, (int) twist, 1000, MotorFactory.BRAKE.COAST);
                 } catch (IOException e) {
                     Ev3Node.this.connectedNode.getLog().error("Motor error", e);
                 }
@@ -133,6 +141,10 @@ public class Ev3Node extends AbstractNodeMain {
                 Float32 voltage = voltagePublisher.newMessage();
                 voltage.setData(brick.SYSTEM.getVBatt());
                 voltagePublisher.publish(voltage);
+
+                Float32 consumption = consumptionPublisher.newMessage();
+                consumption.setData(brick.SYSTEM.getIBatt());
+                consumptionPublisher.publish(consumption);
 
                 Odometry odometry = odometryPublisher.newMessage();
                 setupHeader(odometry.getHeader(), seq);

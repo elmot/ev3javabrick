@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!--
+
+    Written in 2013 by Ted Mielczarek <ted@mielczarek.org>
+    Modified in 2014 by Ilya Motornyy <elijah.mot@gmail.com>
+
+    To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
+
+    You should have received a copy of the CC0 Public Domain Dedication along with this software. If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+
+    -->
+    <script language="JavaScript">
+        var socket = null;
+        var gamepad = null;
+        var oldMessage = null;
+        var haveEvents = 'GamepadEvent' in window;
+        var rAF = window.mozRequestAnimationFrame ||
+                window.webkitRequestAnimationFrame ||
+                window.requestAnimationFrame;
+
+        function scanGamepad() {
+            var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+            gamepad = (gamepads != null && gamepads.length > 0) ? gamepads[0] : null
+        }
+        function startConnection() {
+            socket = new WebSocket("ws://" + location.host + "/conn", "json");
+            socket.onmessage = function (msg) {
+                var json = JSON.parse(msg.data);
+                for (var fld in json) {
+                    if (json.hasOwnProperty(fld)) {
+                        var elm = document.getElementById(fld);
+                        if (elm != null) elm.innerHTML = json[fld];
+                    }
+                }
+            }
+            window.setInterval(function () {
+                if (socket != null) socket.send("")
+            }, 500);
+        }
+
+        function connecthandler(e) {
+            gamepad = e.gamepad;
+            rAF(updateStatus)
+        }
+
+        function disconnecthandler(e) {
+            if (gamepad == e.gamepad) {
+                gamepad = null;
+                document.getElementById("start").innerHTML = "Press a button on your controller to start"
+            }
+        }
+        function ctrlJson(ax, ay, btn1, btn2) {
+            return  { joystick1: {
+                x: ax, y: ay
+            },
+                button1: btn1,
+                button2: btn2
+            };
+        }
+        function buttonPressed(button) {
+            button = button || buttonPressed(gamepad.buttons[0]);
+            return (button == 1.0) || (typeof(button) == "object" && button.pressed);
+        }
+        function updateStatus() {
+
+            if (gamepad != null) {
+                var json = ctrlJson(gamepad.axes[0],gamepad.axes[1],buttonPressed(gamepad.buttons[0]),buttonPressed(gamepad.buttons[1]));
+                var text = JSON.stringify(json);
+                document.getElementById("start").innerHTML = "";
+                if (oldMessage != text) {
+                    oldMessage = text;
+                    document.getElementById("throttle").value = 100 * json.joystick1.x;
+                    document.getElementById("turn").value = 100 * json.joystick1.y;
+                    socket.send(text);
+                }
+            }
+            rAF(updateStatus);
+        }
+
+        if (haveEvents) {
+            window.addEventListener("gamepadconnected", connecthandler);
+            window.addEventListener("gamepaddisconnected", disconnecthandler);
+        } else {
+            setInterval(scanGamepad, 500);
+        }
+
+        startConnection();
+
+        document.onkeydown = function (e) {
+            e = e || window.event;
+            var send = false;
+            var x = document.getElementById("throttle");
+            var y = document.getElementById("turn");
+            var d = e.shiftKey ? 100 : 50;
+            switch (e.keyCode) {
+                case 38:
+                    x.value = -d;
+                    send = true;
+                    break;
+
+                case 40:
+                    x.value = d;
+                    send = true;
+                    break;
+
+                case 37:
+                    y.value = -d;
+                    send = true;
+                    break;
+                case 39:
+                    y.value = d;
+                    send = true;
+                    break;
+                case 17:
+                case 18:
+                    send = true;
+
+            }
+            if (send) {
+                socket.send(JSON.stringify(ctrlJson(x.value/100.0, y.value/100.0, e.ctrlKey, e.altKey)));
+                if (e.stopPropagation)    e.stopPropagation();
+                if (e.cancelBubble!=null) e.cancelBubble = true;
+
+            }
+        }
+        document.onkeyup = function (e) {
+            e = e || window.event;
+            var x = document.getElementById("throttle");
+            var y = document.getElementById("turn");
+            switch (e.keyCode) {
+                case 38:
+                case 40:
+                    x.value = 0;
+                    break;
+
+                case 37:
+                case 39:
+                    y.value = 0;
+                    break;
+            }
+            socket.send(JSON.stringify(ctrlJson(x.value/100.0, y.value/100.0, e.ctrlKey, e.altKey)))
+        }
+    </script>
+    <style>
+        #telemetry {
+            float: right;
+            width: 20em
+        }
+
+        #start {
+            float: right
+        }
+
+        #control input {
+            text-align: center;
+            width: 10em
+        }
+
+        #throttle {
+            transform: rotate(90deg);
+            margin-top: 5em
+        }
+    </style>
+</head>
+<body>
+<div id="control">
+    <input type="range" min="-100" max="100" value="0" id="turn" disabled="disabled"/><br>
+    <input type="range" min="-100" max="100" value="0" id="throttle" disabled="disabled"/>
+</div>
+
+<table id="telemetry">
+    <tr>
+        <td>Speed:</td>
+        <td id="spd">--</td>
+    </tr>
+    <tr>
+        <td>Direction:</td>
+        <td id="dir">--</td>
+    </tr>
+    <tr>
+        <td>Vbatt:</td>
+        <td id="vbatt">--</td>
+    </tr>
+    <tr>
+        <td>Icons:</td>
+        <td id="icns">--</td>
+    </tr>
+    <tr>
+        <td>Proximity:</td>
+        <td id="proximity">--</td>
+    </tr>
+    <tr>
+        <th colspan="2" id="start">Press a button on your controller to start</th>
+    </tr>
+</table>
+</body>
+</html>
