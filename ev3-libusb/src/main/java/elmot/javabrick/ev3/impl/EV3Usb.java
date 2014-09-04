@@ -55,12 +55,12 @@ public class EV3Usb extends EV3 implements UsbInterfacePolicy {
                     while (true) {
                         pipeIn.syncSubmit(dataBlock);
                         int length = 2 + (0xff & (int) dataBlock[0]) + (dataBlock[1] << 8);
-                        ByteBuffer response = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
-                        response.put(dataBlock, 0, length);
                         if (length < 3 || length > 1022) {
-                            LOGGER.warning("Extra response in queue");
+                            LOGGER.warning("Garbage in USB queue - skipping");
                             continue;
                         }
+                        ByteBuffer response = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
+                        response.put(dataBlock, 0, length);
                         int readSeqNo = response.getShort(2);
                         if (readSeqNo < expectedSeqNo) {
                             LOGGER.warning("Resynch EV3 seq no");
