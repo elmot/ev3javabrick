@@ -40,7 +40,7 @@ public class CommandBlock {
 
     public Response run(EV3 brick, Class<?>... outParametersTypes) throws IOException {
         ByteBuffer buffer = ByteBuffer.allocate(1024).order(ByteOrder.LITTLE_ENDIAN);
-        int seqNumber = seqCounter.incrementAndGet() % 65536;
+        int seqNumber = seqCounter.incrementAndGet() & 0x7fff;
         buffer.putShort(2, (short) seqNumber);
         buffer.put(4, commandType);
         buffer.position(7);
