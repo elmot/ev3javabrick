@@ -101,8 +101,6 @@ public class EV3UsbAndroid extends EV3 {
                             Log.w(LOG_TAG, "Resynch EV3 seq no", new IOException());
                             continue;
                         }
-                        byte[] result = new byte[length + 2];
-                        inBuffer.get(result);
                         return (ByteBuffer) inBuffer.limit(length + 2);
                     } finally {
                         inRequest.close();
