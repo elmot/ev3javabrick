@@ -61,6 +61,10 @@ public class Server extends NanoWebSocketServer implements NodeMain {
         super(port);
     }
 
+    public Server(String hostname, int port) {
+        super(hostname, port);
+    }
+
     private boolean button1 = false;
     private boolean button2 = false;
     private double x = 0;
@@ -158,7 +162,7 @@ public class Server extends NanoWebSocketServer implements NodeMain {
         nodeMainExecutor.execute(server, nodeConfiguration);
         List<EV3> ev3s = EV3FactoryUsb.listDiscovered();
         if (ev3s == null || ev3s.isEmpty()) throw new RuntimeException("No bricks found");
-        Ev3Node ev3Node = new Ev3Node(ev3s.get(0));
+        Ev3Node ev3Node = new Ev3Node(ev3s.get(0), Settings.NODE_NAME.join("usb"),Settings.INSTANCE_NAME,Settings.SAMPLING_LOOP_MS);
         nodeMainExecutor.execute(ev3Node, nodeConfiguration);
         //noinspection ResultOfMethodCallIgnored
         System.in.read();
@@ -169,9 +173,6 @@ public class Server extends NanoWebSocketServer implements NodeMain {
     public Response serve(String uri, Method method, Map<String, String> headers, Map<String, String> parms, Map<String, String> files) {
         if (INDEX_HTML.equals(uri)) {
             return new Response(readResource("index.html"));
-        }
-        if ("/gamepadtest.js".equals(uri)) {
-            return new Response(Response.Status.OK, "text/javascript", readResource("gamepadtest.js"));
         }
         Response response = new Response(Response.Status.REDIRECT, MIME_PLAINTEXT, "goto /index.html");
         response.addHeader("location", INDEX_HTML);
