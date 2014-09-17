@@ -1,5 +1,7 @@
 package elmot.javabrick.nxt;
 
+import elmot.javabrick.ev3.PORT;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -201,6 +203,10 @@ public abstract class NXT implements AutoCloseable {
         void setInputMode(byte port, byte sensorType, byte sensorMode) throws NXTException {
             ByteBuffer cmd = newBuffer(5, 0, 0x05).put(2, port).put(3, sensorType).put(4, sensorMode);
             run(cmd, 0x05, 3);
+        }
+
+        public float readUltrasonic(byte port) {
+            return 0;  //Todo
         }
     }
 

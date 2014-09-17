@@ -1,6 +1,5 @@
 package elmot.javabrick.nxt;
 
-import javax.usb.UsbException;
 import java.io.IOException;
 
 /**
@@ -22,7 +21,7 @@ public class NXTException extends IOException {
 
     }
 
-    public NXTException(UsbException e) {
+    public NXTException(Exception e) {
         super(e);
         this.statusByte = -1;
     }
