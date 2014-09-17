@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Ev3Node extends AbstractNodeMain {
 
+    private final long loopMs;
+    private GraphName nodeName;
     private ConnectedNode connectedNode;
     private EV3 brick;
     private Publisher<Float32> irPublisher;
@@ -35,14 +37,18 @@ public class Ev3Node extends AbstractNodeMain {
     private Publisher<TransformStamped> tfPublisher;
     private OdoComputer odoComputer;
     private Publisher<Float32> consumptionPublisher;
+    private GraphName namespace;
 
-    public Ev3Node(EV3 brick) {
+    public Ev3Node(EV3 brick,GraphName nodeName, GraphName namespace, long loopMs) {
         this.brick = brick;
+        this.nodeName = nodeName;
+        this.namespace = namespace;
+        this.loopMs = loopMs;
     }
 
     @Override
     public GraphName getDefaultNodeName() {
-        return Settings.NODE_NAME.join("ev3");
+        return nodeName;
     }
 
     @Override
@@ -54,13 +60,13 @@ public class Ev3Node extends AbstractNodeMain {
 
         odoComputer = new OdoComputer(1.7, 14.3, connectedNode.getCurrentTime());
 
-        irPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("ir_distance"), Float32._TYPE);
-        voltagePublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("voltage"), Float32._TYPE);
-        consumptionPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("consumption"), Float32._TYPE);
-        odometryPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("odom"), Odometry._TYPE);
-        tfPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME.join("tf"), TransformStamped._TYPE);
+        irPublisher = connectedNode.newPublisher(namespace.join("ir_distance"), Float32._TYPE);
+        voltagePublisher = connectedNode.newPublisher(namespace.join("voltage"), Float32._TYPE);
+        consumptionPublisher = connectedNode.newPublisher(namespace.join("consumption"), Float32._TYPE);
+        odometryPublisher = connectedNode.newPublisher(namespace.join("odom"), Odometry._TYPE);
+        tfPublisher = connectedNode.newPublisher(namespace.join("tf"), TransformStamped._TYPE);
 
-        Subscriber<Bool> clampSubscriber = connectedNode.newSubscriber(Settings.INSTANCE_NAME.join("grip"), Bool._TYPE);
+        Subscriber<Bool> clampSubscriber = connectedNode.newSubscriber(namespace.join("grip"), Bool._TYPE);
         clampSubscriber.addMessageListener(new MessageListener<Bool>() {
             @Override
             public void onNewMessage(Bool bool) {
@@ -68,7 +74,7 @@ public class Ev3Node extends AbstractNodeMain {
             }
         });
 
-        Subscriber<Twist> motorSpeedSubscriber = connectedNode.newSubscriber(Settings.INSTANCE_NAME.join("cmd_vel"), Twist._TYPE);
+        Subscriber<Twist> motorSpeedSubscriber = connectedNode.newSubscriber(namespace.join("cmd_vel"), Twist._TYPE);
         motorSpeedSubscriber.addMessageListener(new MessageListener<Twist>() {
             @Override
             public void onNewMessage(Twist msg) {
@@ -88,7 +94,7 @@ public class Ev3Node extends AbstractNodeMain {
             }
         });
 
-        Subscriber<Int16> toneSubscriber = connectedNode.newSubscriber(Settings.INSTANCE_NAME.join("tone"), Int16._TYPE);
+        Subscriber<Int16> toneSubscriber = connectedNode.newSubscriber(namespace.join("tone"), Int16._TYPE);
         toneSubscriber.addMessageListener(new MessageListener<Int16>() {
             @Override
             public void onNewMessage(Int16 freq) {
@@ -101,7 +107,7 @@ public class Ev3Node extends AbstractNodeMain {
             }
         });
 
-        connectedNode.getScheduledExecutorService().scheduleAtFixedRate(new SensorSample(), Settings.SAMPLING_LOOP_MS, Settings.SAMPLING_LOOP_MS, TimeUnit.MILLISECONDS);
+        connectedNode.getScheduledExecutorService().scheduleAtFixedRate(new SensorSample(), loopMs, loopMs, TimeUnit.MILLISECONDS);
 
     }
 

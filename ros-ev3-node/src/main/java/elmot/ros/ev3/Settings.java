@@ -13,8 +13,6 @@ import java.util.Enumeration;
  *         To change this template use File | Settings | File Templates.
  */
 public class Settings {
-    public static final int MAX_LOG_RECORDS = 50;
-
     private Settings() {
     }
 
