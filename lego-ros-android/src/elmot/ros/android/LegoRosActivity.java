@@ -1,16 +1,22 @@
 package elmot.ros.android;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.SurfaceView;
 import android.widget.Chronometer;
 import android.widget.TextView;
 import elmot.ros.android.hardware.CameraPreview;
-import elmot.ros.ev3.Settings;
 import org.jboss.netty.buffer.LittleEndianHeapChannelBuffer;
 import org.ros.message.MessageListener;
 import org.ros.namespace.GraphName;
@@ -31,6 +37,7 @@ public class LegoRosActivity extends Activity {
 
 
     public static final String EXIT_ACTION = LegoRosActivity.class.getPackage().getName() + ".EXIT";
+    public static final int SETTINGS_RESULT = 0;
     private ActivityNode activityNode;
 
     /**
@@ -41,22 +48,24 @@ public class LegoRosActivity extends Activity {
         super.onCreate(savedInstanceState);
         if (checkExit(getIntent())) return;
         setContentView(R.layout.main);
-        runMasterServices();
+        runServices();
         SurfaceView cameraView = (SurfaceView) findViewById(R.id.cameraView);
-        CameraPreview cameraPreview = CameraPreview.init(cameraView);
+        CameraPreview cameraPreview = CameraPreview.init(cameraView, Settings.cameraFacing(this));
         activityNode = new ActivityNode(cameraPreview);
-        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(Settings.ownIpAddress());
+        String host = Settings.ownIpAddress(this);
+        NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(host);
         final NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
         nodeMainExecutor.execute(activityNode, nodeConfiguration);
         ((Chronometer) findViewById(R.id.chronometer)).start();
-        String text = "http://" + Settings.ownIpAddress() + ":11311/";
+        String text = Settings.masterUriAddress(this);
         ((TextView) findViewById(R.id.masterUrlTextView)).setText(text);
 
     }
 
-    private void runMasterServices() {
+    private void runServices() {
         startService(masterIntent());
-        startService(new Intent(this,EV3NodeService.class));
+        startService(new Intent(this, EV3NodeService.class));
+
     }
 
     @Override
@@ -100,12 +109,12 @@ public class LegoRosActivity extends Activity {
 
         @Override
         public GraphName getDefaultNodeName() {
-            return Settings.NODE_NAME;
+            return GraphName.of(Settings.namespace(LegoRosActivity.this));
         }
 
         @Override
         public void onStart(final ConnectedNode connectedNode) {
-            cameraPublisher = connectedNode.newPublisher(Settings.INSTANCE_NAME + "/camera/compressed", CompressedImage._TYPE);
+            cameraPublisher = connectedNode.newPublisher(Settings.namespace(LegoRosActivity.this) + "/camera/compressed", CompressedImage._TYPE);
             this.connectedNode = connectedNode;
             scheduled = this.connectedNode.getScheduledExecutorService().scheduleAtFixedRate(this, Settings.CAMERA_LOOP_MS, Settings.CAMERA_LOOP_MS, TimeUnit.MILLISECONDS);
             Subscriber<Log> logger = connectedNode.newSubscriber("/rosout", Log._TYPE);
@@ -141,7 +150,7 @@ public class LegoRosActivity extends Activity {
                 else
                     color = 0xffe00000;
                 text.append(stringBuilder);
-                text.setSpan(new ForegroundColorSpan(color), text.length() - stringBuilder.length(), text.length() , Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                text.setSpan(new ForegroundColorSpan(color), text.length() - stringBuilder.length(), text.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                 text.append("\n");
             }
 
@@ -152,6 +161,7 @@ public class LegoRosActivity extends Activity {
                 }
             });
         }
+
         @Override
         public void run() {
             try {
@@ -179,6 +189,46 @@ public class LegoRosActivity extends Activity {
             scheduled.cancel(true);
             connectedNode.shutdown();
             cameraPreview.release();
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        menu.add(R.string.options_menu).setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                startActivityForResult(new Intent(LegoRosActivity.this, SettingsActivity.class), SETTINGS_RESULT);
+                return true;
+            }
+        });
+        return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == SETTINGS_RESULT) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            DialogInterface.OnClickListener listener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    if (which == AlertDialog.BUTTON_POSITIVE) {
+                        PendingIntent intent = PendingIntent.getActivity(getApplication().getBaseContext(), 0,
+                                new Intent(getIntent()), getIntent().getFlags());
+                        AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 2000, intent);
+                        System.exit(2);
+                    }
+                }
+            };
+            builder.setTitle("Settings changed")
+                    .setMessage("Restart to apply new settings?")
+                    .setIcon(R.drawable.ic_ros_org)
+                    .setPositiveButton("Yes", listener)
+                    .setNegativeButton("Keep running", listener);
+            builder.create().show();
 
         }
     }

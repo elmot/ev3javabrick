@@ -11,6 +11,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 import elmot.ros.android.EV3NodeService;
+import elmot.ros.android.NXTNodeService;
 import elmot.ros.android.LegoRosActivity;
 import elmot.ros.android.R;
 import elmot.ros.android.RosMasterService;

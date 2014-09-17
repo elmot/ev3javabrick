@@ -1,0 +1,74 @@
+<PreferenceScreen
+        xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--TODO strings to resources-->
+    <!--TODO make headers-->
+    <PreferenceCategory android:title="@string/ros_settings">
+        <EditTextPreference
+                android:key="@string/namespace"
+                android:title="@string/ros_namespace_title"
+                android:defaultValue="@string/def_namespace"
+                android:inputType="text"/>
+
+        <SwitchPreference
+                android:key="@string/local_master"
+                android:title="@string/title_run_local_master"
+                android:summaryOn="@string/run_local_master_on"
+                android:summaryOff="@string/run_local_master_off"
+                android:defaultValue="@string/def_local_master"
+                android:disableDependentsState="true"/>
+        <EditTextPreference
+                android:key="@string/ext_master_url"
+                android:title="@string/title_ext_master_url"
+                android:defaultValue="@string/def_ext_master_url"
+                android:inputType="textUri"
+                android:dependency="@string/local_master"/>
+        <SwitchPreference
+                android:key="@string/local_webserver"
+                android:title="@string/title_local_webserver"
+                android:summaryOn="@string/local_webserver_on"
+                android:summaryOff="@string/local_webserver_off"
+                android:defaultValue="@string/def_local_webserver"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_bluetooth">
+        <SwitchPreference android:key="@string/bluetooth_enable" android:title="@string/title_bluetooth_enable"
+                          android:summaryOn="@string/bluetooth_enable_on"
+                          android:summaryOff="@string/bluetooth_enable_off"
+                          android:defaultValue="@string/def_bluetooth_enable"/>
+        <Preference android:key="@string/bluetooth_device"
+                    android:title="@string/title_bluetooth_device"
+                android:dependency="@string/bluetooth_enable">
+            <intent android:action="android.bluetooth.devicepicker.action.LAUNCH"/>
+        </Preference>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_robot_settings">
+        <SwitchPreference
+                android:key="@string/auto_own_ip"
+                android:title="@string/title_auto_own_ip"
+                android:disableDependentsState="true"
+                android:defaultValue="@string/def_auto_own_ip"
+                android:summaryOn="@string/auto_own_ip_on"
+                android:summaryOff="@string/auto_own_ip_off"
+                />
+        <EditTextPreference
+                android:key="@string/own_ip"
+                android:title="@string/title_own_ip"
+                android:dependency="@string/auto_own_ip"/>
+        <ListPreference
+                android:key="@string/camera_side"
+                android:title="@string/title_camera_side"
+                android:entries="@array/camera_face"
+                android:entryValues="@array/camera_face_val"
+                android:defaultValue="@string/def_camera_side"
+                android:summary="@string/summary_camera_side"/>
+        <EditTextPreference
+                android:key="@string/wheel_turn_cm"
+                android:title="@string/title_wheel_turn_cm"
+                android:inputType="numberDecimal"
+                android:defaultValue="@string/def_wheel_turn_cm"/>
+        <EditTextPreference
+                android:key="@string/wheel_dist_cm"
+                android:title="@string/title_wheel_dist_cm"
+                android:inputType="numberDecimal"
+                android:defaultValue="@string/def_wheel_dist_cm"/>
+    </PreferenceCategory>
+</PreferenceScreen>

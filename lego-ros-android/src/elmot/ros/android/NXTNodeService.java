@@ -8,8 +8,8 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
-import elmot.javabrick.ev3.android.usb.EV3UsbAndroid;
-import elmot.ros.ev3.Ev3Node;
+import elmot.javabrick.nxt.android.usb.NXTUsbAndroid;
+import elmot.ros.nxt.NXTNode;
 import org.ros.namespace.GraphName;
 import org.ros.node.DefaultNodeMainExecutor;
 import org.ros.node.NodeConfiguration;
@@ -18,13 +18,12 @@ import org.ros.node.NodeMainExecutor;
 /**
  * @author elmot
  *         Date: 13.08.14
- *         To change this template use File | Settings | File Templates.
  */
 
 
-public class EV3NodeService extends Service {
+public class NXTNodeService extends Service {
 
-    private Ev3Node ev3Node;
+    private NXTNode nxtNode;
     private WifiManager.WifiLock wifiLock;
 
     @Override
@@ -46,15 +45,15 @@ public class EV3NodeService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
-        UsbDevice device = EV3UsbAndroid.findDevice(usbManager);
+        UsbDevice device = NXTUsbAndroid.findDevice(usbManager);
         if (device != null) {
             Notification notification = new Notification(R.drawable.ic_ev3_logo, "EV3 ROS Node", System.currentTimeMillis());
             notification.setLatestEventInfo(this, "EV3 ROS Node", "Started", null);
             startForeground(R.drawable.ic_ev3_logo, notification);
-            ev3Node = new Ev3Node(new EV3UsbAndroid(usbManager),Settings.NODE_NAME.join("usb"), GraphName.of(Settings.namespace(this)),Settings.SAMPLING_LOOP_MS);
-            NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(Settings.ownIpAddress(this));
+            nxtNode = new NXTNode(new NXTUsbAndroid(usbManager), Settings.NODE_NAME.join("nxt"), GraphName.of(Settings.namespace(this)),Settings.SAMPLING_LOOP_MS);
+            NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(Settings.ownIpAddress(NXTNodeService.this));
             NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
-            nodeMainExecutor.execute(ev3Node, nodeConfiguration);
+            nodeMainExecutor.execute(nxtNode, nodeConfiguration);
         } else {
             stopSelf();
         }
@@ -63,7 +62,7 @@ public class EV3NodeService extends Service {
 
     @Override
     public void onDestroy() {
-        if (ev3Node != null) ev3Node.shutdown();
+        if (nxtNode != null) nxtNode.shutdown();
         if (wifiLock != null) wifiLock.release();
     }
 

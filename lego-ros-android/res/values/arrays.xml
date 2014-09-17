@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="camera_face_val">
+        <item>-1</item>
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+    <string-array name="camera_face">
+        <item>No Camera</item>
+        <item>Front Camera</item>
+        <item>Rear Camera</item>
+    </string-array>
+
+</resources>

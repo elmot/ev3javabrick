@@ -8,6 +8,35 @@
     <string name="USB_connection">USB connection</string>
     <string name="disconnected">LEGO EV3 Disconnected</string>
     <string name="connected">LEGO EV3 Connected</string>
-    <string name="master_started">ROS Master Started</string>
     <string name="cick_to_stop">Click to stop</string>
+    <string name="prefs_name">elmot.ros.addroid.prefs</string>
+    <string name="NoneBluetooth"><![CDATA[<None>]]></string>
+    <string name="options_menu">Settings</string>
+    <string name="ros_settings">ROS settings</string>
+    <string name="ros_namespace_title">ROS namespace</string>
+    <string name="title_run_local_master">Run local master node</string>
+    <string name="run_local_master_on">Local ROS Master node will be started and used</string>
+    <string name="run_local_master_off">External ROS Master node will be used</string>
+    <string name="title_ext_master_url">Master Node URL</string>
+    <string name="title_local_webserver">Run local Web Server</string>
+    <string name="local_webserver_on">Local Web server will control the robot</string>
+    <string name="local_webserver_off">Do not start</string>
+    <string name="title_bluetooth">Bluetooth(Not supported yet)</string>
+    <string name="title_bluetooth_enable">Enable</string>
+    <string name="bluetooth_enable_on">Connect to robot via Bluetooth</string>
+    <string name="bluetooth_enable_off">Do not use Bluetooth</string>
+    <string name="title_bluetooth_device">Bluetooth Device</string>
+    <string name="title_robot_settings">Robot Settings</string>
+    <string name="title_auto_own_ip">Use auto IP address</string>
+    <string name="auto_own_ip_on">Robots IP will will be detected automatically</string>
+    <string name="auto_own_ip_off">Robots IP must be set manually</string>
+    <string name="title_own_ip">Own ip</string>
+    <string name="title_camera_side">Camera to use</string>
+    <string name="summary_camera_side">%s will be used</string>
+    <string name="title_wheel_turn_cm">Motor revolution track length, cm</string>
+    <string name="title_wheel_dist_cm">Distance between Wheels, cm</string>
+
+    <string name="web_started">Web Server Started</string>
+    <string name="master_started">ROS Master Started</string>
+    <string name="web_master_started">ROS Master &amp; Web Started</string>
 </resources>

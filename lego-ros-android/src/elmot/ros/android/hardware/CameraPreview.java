@@ -4,7 +4,7 @@ import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import elmot.ros.ev3.Settings;
+import elmot.ros.android.Settings;
 
 import java.io.IOException;
 
@@ -20,13 +20,13 @@ public class CameraPreview implements SurfaceHolder.Callback {
     //    private SurfaceHolder surfaceHolder;
     private Camera mCamera;
     private volatile boolean cameraAvailable = false;
-    public static Camera getCameraInstance() {
+    public static Camera getCameraInstance(int cameraFacing) {
         Camera c = null;
         int cameraIndex = 0;
         for (int i = Camera.getNumberOfCameras() - 1; i >= 0; i--) {
             Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
             Camera.getCameraInfo(i, cameraInfo);
-            if (cameraInfo.facing == Settings.CAMERA_FACING) {
+            if (cameraInfo.facing == cameraFacing) {
                 cameraIndex = i;
                 break;
             }
@@ -47,15 +47,15 @@ public class CameraPreview implements SurfaceHolder.Callback {
         return c; // returns null if camera is unavailable
     }
 
-    public static CameraPreview init(SurfaceView surfaceView) {
+    public static CameraPreview init(SurfaceView surfaceView,int cameraFacing) {
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
-        CameraPreview cameraPreview = new CameraPreview();
+        CameraPreview cameraPreview = new CameraPreview(cameraFacing);
         surfaceHolder.addCallback(cameraPreview);
         return cameraPreview;
     }
 
-    private CameraPreview() {
-        this.mCamera = getCameraInstance();
+    private CameraPreview(int cameraFacing) {
+        this.mCamera = getCameraInstance(cameraFacing);
         // Install a SurfaceHolder.Callback so we get notified when the
         // underlying surface is created and destroyed.
 //        barCodeReader = new MultiFormatReader();

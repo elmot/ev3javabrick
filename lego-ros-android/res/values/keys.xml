@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="namespace">namespace</string>
+    <string name="def_namespace">EV3_A</string>
+
+    <string name="local_master">local_master</string>
+    <string name="def_local_master">true</string>
+
+    <string name="ext_master_url">ext_master_url</string>
+    <string name="def_ext_master_url">http://192.168.1.1:11311/</string>
+
+    <string name="local_webserver">local_webserver</string>
+    <string name="def_local_webserver">true</string>
+
+    <string name="bluetooth_enable">bluetooth_enable</string>
+    <string name="def_bluetooth_enable">false</string>
+
+    <string name="bluetooth_device">bluetooth_device</string>
+
+    <string name="auto_own_ip">auto_own_ip</string>
+    <string name="def_auto_own_ip">true</string>
+
+    <string name="own_ip">own_ip</string>
+
+    <string name="camera_side">camera_side</string>
+    <string name="def_camera_side">0</string>
+
+    <string name="wheel_turn_cm">wheel_turn_cm</string>
+    <string name="def_wheel_turn_cm">10</string>
+
+    <string name="wheel_dist_cm">wheel_dist_cm</string>
+    <string name="def_wheel_dist_cm">20</string>
+</resources>
