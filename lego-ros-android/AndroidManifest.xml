@@ -17,6 +17,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
 
 
     <application
@@ -60,7 +61,8 @@
 
         <service android:name=".RosMasterService"/>
         <service android:name=".EV3NodeService"/>
-        <service android:name=".NXTNodeService"/>
+        <service android:name=".NXTUsbNodeService"/>
+        <service android:name=".NXTBluetoothNodeService"/>
 
         <receiver android:name=".hardware.UsbConnectionActivity$UsbDisconnectionReceiver">
             <intent-filter>

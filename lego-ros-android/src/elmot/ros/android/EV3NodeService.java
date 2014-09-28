@@ -51,7 +51,8 @@ public class EV3NodeService extends Service {
             Notification notification = new Notification(R.drawable.ic_ev3_logo, "EV3 ROS Node", System.currentTimeMillis());
             notification.setLatestEventInfo(this, "EV3 ROS Node", "Started", null);
             startForeground(R.drawable.ic_ev3_logo, notification);
-            ev3Node = new Ev3Node(new EV3UsbAndroid(usbManager),Settings.NODE_NAME.join("usb"), GraphName.of(Settings.namespace(this)),Settings.SAMPLING_LOOP_MS);
+            ev3Node = new Ev3Node(new EV3UsbAndroid(usbManager),Settings.NODE_NAME.join("usb"),
+                    GraphName.of(Settings.namespace(this)),Settings.SAMPLING_LOOP_MS, Settings.wheelRadius(this), Settings.wheelDist(this));
             NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(Settings.ownIpAddress(this));
             NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
             nodeMainExecutor.execute(ev3Node, nodeConfiguration);

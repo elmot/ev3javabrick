@@ -59,13 +59,15 @@ public class LegoRosActivity extends Activity {
         ((Chronometer) findViewById(R.id.chronometer)).start();
         String text = Settings.masterUriAddress(this);
         ((TextView) findViewById(R.id.masterUrlTextView)).setText(text);
-
     }
 
     private void runServices() {
         startService(masterIntent());
         startService(new Intent(this, EV3NodeService.class));
-
+        if(Settings.bluetoothStart(this))
+        {
+            startService(new Intent(this,NXTBluetoothNodeService.class));
+        }
     }
 
     @Override

@@ -61,10 +61,10 @@
                 android:defaultValue="@string/def_camera_side"
                 android:summary="@string/summary_camera_side"/>
         <EditTextPreference
-                android:key="@string/wheel_turn_cm"
-                android:title="@string/title_wheel_turn_cm"
+                android:key="@string/wheel_radius_cm"
+                android:title="@string/title_wheel_radius_cm"
                 android:inputType="numberDecimal"
-                android:defaultValue="@string/def_wheel_turn_cm"/>
+                android:defaultValue="@string/def_wheel_radius_cm"/>
         <EditTextPreference
                 android:key="@string/wheel_dist_cm"
                 android:title="@string/title_wheel_dist_cm"

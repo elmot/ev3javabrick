@@ -33,10 +33,17 @@
     <string name="title_own_ip">Own ip</string>
     <string name="title_camera_side">Camera to use</string>
     <string name="summary_camera_side">%s will be used</string>
-    <string name="title_wheel_turn_cm">Motor revolution track length, cm</string>
+    <string name="title_wheel_radius_cm">Motor revolution track length, cm</string>
     <string name="title_wheel_dist_cm">Distance between Wheels, cm</string>
 
     <string name="web_started">Web Server Started</string>
     <string name="master_started">ROS Master Started</string>
     <string name="web_master_started">ROS Master &amp; Web Started</string>
+    <string name="no_bt_device_title">Settings error</string>
+    <string name="no_bt_device_msg">Bluetooth device must be set through Settings</string>
+    <string name="no_bt_not_bonded_msg">Bluetooth device must be paired</string>
+    <string name="no_bt_not_bonded_title">Wrong device selected</string>
+    <string name="nxt_derice_notification_ticker">NXT Bluetooth ROS Node</string>
+    <string name="nxt_service_event_title">NXT BT ROS Node</string>
+    <string name="click_to_stop">Click to stop</string>
 </resources>

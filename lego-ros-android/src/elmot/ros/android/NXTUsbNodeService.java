@@ -8,7 +8,7 @@ import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbManager;
 import android.net.wifi.WifiManager;
 import android.os.IBinder;
-import elmot.javabrick.nxt.android.usb.NXTUsbAndroid;
+import elmot.javabrick.nxt.android.NXTUsbAndroid;
 import elmot.ros.nxt.NXTNode;
 import org.ros.namespace.GraphName;
 import org.ros.node.DefaultNodeMainExecutor;
@@ -21,7 +21,7 @@ import org.ros.node.NodeMainExecutor;
  */
 
 
-public class NXTNodeService extends Service {
+public class NXTUsbNodeService extends Service {
 
     private NXTNode nxtNode;
     private WifiManager.WifiLock wifiLock;
@@ -35,7 +35,7 @@ public class NXTNodeService extends Service {
     public void onCreate() {
         super.onCreate();
         WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-        wifiLock = wifiManager.createWifiLock("Ros master wifi lock");
+        wifiLock = wifiManager.createWifiLock("Ros NXT wifi lock");
         if (!wifiLock.isHeld()) {
             wifiLock.acquire();
         }
@@ -47,11 +47,15 @@ public class NXTNodeService extends Service {
         UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
         UsbDevice device = NXTUsbAndroid.findDevice(usbManager);
         if (device != null) {
-            Notification notification = new Notification(R.drawable.ic_ev3_logo, "EV3 ROS Node", System.currentTimeMillis());
-            notification.setLatestEventInfo(this, "EV3 ROS Node", "Started", null);
-            startForeground(R.drawable.ic_ev3_logo, notification);
-            nxtNode = new NXTNode(new NXTUsbAndroid(usbManager), Settings.NODE_NAME.join("nxt"), GraphName.of(Settings.namespace(this)),Settings.SAMPLING_LOOP_MS);
-            NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(Settings.ownIpAddress(NXTNodeService.this));
+            Notification.Builder notification = new Notification.Builder(this)
+                    .setSmallIcon(R.drawable.ic_nxt_logo)
+                    .setTicker("NXT ROS Node")
+                    .setWhen(System.currentTimeMillis())
+                    .setContentTitle("NXT ROS Node")
+                    .setContentText("Started");
+            startForeground(R.drawable.ic_nxt_logo, notification.build());
+            nxtNode = new NXTNode(new NXTUsbAndroid(usbManager), Settings.NODE_NAME.join("nxt"), GraphName.of(Settings.namespace(this)), Settings.SAMPLING_LOOP_MS);
+            NodeConfiguration nodeConfiguration = NodeConfiguration.newPublic(Settings.ownIpAddress(NXTUsbNodeService.this));
             NodeMainExecutor nodeMainExecutor = DefaultNodeMainExecutor.newDefault();
             nodeMainExecutor.execute(nxtNode, nodeConfiguration);
         } else {

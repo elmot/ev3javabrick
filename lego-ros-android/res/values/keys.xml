@@ -25,8 +25,8 @@
     <string name="camera_side">camera_side</string>
     <string name="def_camera_side">0</string>
 
-    <string name="wheel_turn_cm">wheel_turn_cm</string>
-    <string name="def_wheel_turn_cm">10</string>
+    <string name="wheel_radius_cm">wheel_turn_cm</string>
+    <string name="def_wheel_radius_cm">10</string>
 
     <string name="wheel_dist_cm">wheel_dist_cm</string>
     <string name="def_wheel_dist_cm">20</string>

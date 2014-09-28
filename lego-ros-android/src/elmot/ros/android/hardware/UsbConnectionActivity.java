@@ -1,6 +1,7 @@
 package elmot.ros.android.hardware;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,11 +11,7 @@ import android.hardware.usb.UsbManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
-import elmot.ros.android.EV3NodeService;
-import elmot.ros.android.NXTNodeService;
-import elmot.ros.android.LegoRosActivity;
-import elmot.ros.android.R;
-import elmot.ros.android.RosMasterService;
+import elmot.ros.android.*;
 
 /**
  * @author elmot
@@ -29,8 +26,7 @@ public class UsbConnectionActivity extends Activity {
         setContentView(attached ? R.layout.usb_connected : R.layout.usb_disconnected);
         if (attached) {
             new RunAppTask().execute();
-        } else
-        {
+        } else {
             new StopUsbTask().execute();
         }
 
@@ -42,10 +38,11 @@ public class UsbConnectionActivity extends Activity {
         overridePendingTransition(0, 0);
     }
 
-    private class StopUsbTask extends AsyncTask<Void,Void,Void> {
+    private class StopUsbTask extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            startService(new Intent(UsbConnectionActivity.this, EV3NodeService.class));
+            UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            startService(new Intent(UsbConnectionActivity.this, getNodeClass(device)));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
@@ -58,10 +55,12 @@ public class UsbConnectionActivity extends Activity {
             finish();
         }
     }
-    private class RunAppTask extends AsyncTask<Void,String,Void>  {
+
+    private class RunAppTask extends AsyncTask<Void, String, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             UsbDevice device = getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
+            Class nodeServiceClass = getNodeClass(device);
             UsbManager usbManager = (UsbManager) getSystemService(USB_SERVICE);
             UsbDeviceConnection usbDeviceConnection = usbManager.openDevice(device);
             try {
@@ -72,7 +71,7 @@ public class UsbConnectionActivity extends Activity {
             }
             Thread.yield();
             startService(new Intent(UsbConnectionActivity.this, RosMasterService.class));
-            startService(new Intent(UsbConnectionActivity.this, EV3NodeService.class));
+            startService(new Intent(UsbConnectionActivity.this, nodeServiceClass));
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
@@ -91,6 +90,11 @@ public class UsbConnectionActivity extends Activity {
             finish();
         }
     }
+
+    private Class<? extends Service> getNodeClass(UsbDevice device) {
+        return device.getProductId() == 5 ? EV3NodeService.class : NXTUsbNodeService.class;
+    }
+
     /**
      * @author elmot
      *         Date: 14.08.14
@@ -98,7 +102,7 @@ public class UsbConnectionActivity extends Activity {
     public static class UsbDisconnectionReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            context.startActivity(new Intent(context, UsbConnectionActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK |Intent.FLAG_ACTIVITY_NO_ANIMATION));
+            context.startActivity(new Intent(context, UsbConnectionActivity.class).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION));
         }
     }
 }

@@ -53,7 +53,7 @@ public class Settings {
     public static String masterUriAddress(Context context) {
         SharedPreferences preferences = getPreferences(context);
         boolean localMaster = needLocalMaster(context, preferences);
-        if (localMaster) return "http://" + ownIpAddress(context) +":11311/";
+        if (localMaster) return "http://" + ownIpAddress(context) + ":11311/";
         return getPreferences(context).getString(context.getString(R.string.ext_master_url), context.getString(R.string.def_ext_master_url));
     }
 
@@ -81,8 +81,8 @@ public class Settings {
         return getPreferences(context).getString(context.getString(keyId), context.getString(defId));
     }
 
-    public static double wheelRevolutionTrackLength(Context context) {
-        return Double.valueOf(getString(context, R.string.wheel_turn_cm, R.string.def_wheel_turn_cm));
+    public static double wheelRadius(Context context) {
+        return Double.valueOf(getString(context, R.string.wheel_radius_cm, R.string.def_wheel_radius_cm));
     }
 
     public static double wheelDist(Context context) {
@@ -91,6 +91,14 @@ public class Settings {
 
     public static int cameraFacing(Context context) {
         return Integer.valueOf(getString(context, R.string.camera_side, R.string.def_camera_side));
+    }
+
+    public static boolean bluetoothStart(Context context) {
+        return getBoolean(context, getPreferences(context), R.string.bluetooth_enable, R.string.def_bluetooth_enable);
+    }
+
+    public static String bluetoothAddress(Context context) {
+        return getPreferences(context).getString(context.getString(R.string.bluetooth_device),null);
     }
 
 }
