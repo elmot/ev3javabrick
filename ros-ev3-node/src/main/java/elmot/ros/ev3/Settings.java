@@ -13,6 +13,9 @@ import java.util.Enumeration;
  *         To change this template use File | Settings | File Templates.
  */
 public class Settings {
+    public static final double WHEEL_DISTANCE_CM = 14.3;
+    public static final double WHEEL_RADIUS_CM = 1.7;
+
     private Settings() {
     }
 

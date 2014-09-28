@@ -28,6 +28,8 @@ import java.util.concurrent.TimeUnit;
 public class Ev3Node extends AbstractNodeMain {
 
     private final long loopMs;
+    private final double wheelRadiusCm;
+    private final double wheelDistanceCm;
     private GraphName nodeName;
     private ConnectedNode connectedNode;
     private EV3 brick;
@@ -39,11 +41,14 @@ public class Ev3Node extends AbstractNodeMain {
     private Publisher<Float32> consumptionPublisher;
     private GraphName namespace;
 
-    public Ev3Node(EV3 brick,GraphName nodeName, GraphName namespace, long loopMs) {
+    public Ev3Node(EV3 brick,GraphName nodeName, GraphName namespace, long loopMs,
+                   double wheelRadiusCm, double wheelDistanceCm) {
         this.brick = brick;
         this.nodeName = nodeName;
         this.namespace = namespace;
         this.loopMs = loopMs;
+        this.wheelRadiusCm = wheelRadiusCm;
+        this.wheelDistanceCm = wheelDistanceCm;
     }
 
     @Override
@@ -58,7 +63,7 @@ public class Ev3Node extends AbstractNodeMain {
 
         clamp(false);
 
-        odoComputer = new OdoComputer(1.7, 14.3, connectedNode.getCurrentTime());
+        odoComputer = new OdoComputer(wheelRadiusCm, wheelDistanceCm, connectedNode.getCurrentTime());
 
         irPublisher = connectedNode.newPublisher(namespace.join("ir_distance"), Float32._TYPE);
         voltagePublisher = connectedNode.newPublisher(namespace.join("voltage"), Float32._TYPE);

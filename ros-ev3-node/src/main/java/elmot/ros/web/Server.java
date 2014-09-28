@@ -162,7 +162,8 @@ public class Server extends NanoWebSocketServer implements NodeMain {
         nodeMainExecutor.execute(server, nodeConfiguration);
         List<EV3> ev3s = EV3FactoryUsb.listDiscovered();
         if (ev3s == null || ev3s.isEmpty()) throw new RuntimeException("No bricks found");
-        Ev3Node ev3Node = new Ev3Node(ev3s.get(0), Settings.NODE_NAME.join("usb"),Settings.INSTANCE_NAME,Settings.SAMPLING_LOOP_MS);
+        Ev3Node ev3Node = new Ev3Node(ev3s.get(0), Settings.NODE_NAME.join("usb"), Settings.INSTANCE_NAME, Settings.SAMPLING_LOOP_MS,
+                Settings.WHEEL_RADIUS_CM, Settings.WHEEL_DISTANCE_CM);
         nodeMainExecutor.execute(ev3Node, nodeConfiguration);
         //noinspection ResultOfMethodCallIgnored
         System.in.read();
