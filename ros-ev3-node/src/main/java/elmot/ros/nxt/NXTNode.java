@@ -113,7 +113,7 @@ public class NXTNode extends AbstractNodeMain {
                 ultasonicPublisher.publish(proximity);
 
                 Float32 voltage = voltagePublisher.newMessage();
-                voltage.setData(brick.SYSTEM.getBatteryLevel());
+                voltage.setData((float) brick.SYSTEM.getVBatt());
                 voltagePublisher.publish(voltage);
 
                 Odometry odometry = odometryPublisher.newMessage();
