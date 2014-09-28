@@ -1,7 +1,5 @@
 package elmot.javabrick.nxt;
 
-import elmot.javabrick.ev3.PORT;
-
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
@@ -117,11 +115,11 @@ public abstract class NXT implements AutoCloseable {
         }
 
         /**
-         * @return milliVolts
+         * @return Volts
          */
-        public int getBatteryLevel() throws NXTException {
+        public double getVBatt() throws NXTException {
             ByteBuffer cmd = newBuffer(2, 0, 0x0B);
-            return run(cmd, 0x0B, 5).getShort(3) & 0xFFFF;
+            return (run(cmd, 0x0B, 5).getShort(3) & 0xFFFF) / 1000.0d;
         }
 
         /**
