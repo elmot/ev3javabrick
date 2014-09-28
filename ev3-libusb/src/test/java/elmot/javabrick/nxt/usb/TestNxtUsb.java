@@ -96,10 +96,10 @@ public class TestNxtUsb {
 
     @Test
     public void testVoltage() throws IOException {
-        int batteryLevel = NXT.SYSTEM.getBatteryLevel();
+        double batteryLevel = NXT.SYSTEM.getVBatt();
         System.out.println("batteryLevel = " + batteryLevel);
-        assertTrue(batteryLevel > 5000);
-        assertTrue(batteryLevel < 11000);
+        assertTrue(batteryLevel > 5);
+        assertTrue(batteryLevel < 11);
     }
 
     @Test
