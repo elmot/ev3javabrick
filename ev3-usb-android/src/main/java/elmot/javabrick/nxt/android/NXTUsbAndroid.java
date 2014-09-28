@@ -1,11 +1,10 @@
-package elmot.javabrick.nxt.android.usb;
+package elmot.javabrick.nxt.android;
 
 import android.hardware.usb.*;
 import android.util.Log;
 import elmot.javabrick.nxt.NXT;
 import elmot.javabrick.nxt.NXTException;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Map;
