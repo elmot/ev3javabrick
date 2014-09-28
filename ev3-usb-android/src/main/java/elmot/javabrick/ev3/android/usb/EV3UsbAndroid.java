@@ -58,7 +58,6 @@ public class EV3UsbAndroid extends EV3 {
             if (!conn.claimInterface(anInterface, true)) {
                 throw new IOException("Can not claim EV3");
             }
-            cancelPending(in, conn);
             try {
                 ByteBuffer outBuffer = ByteBuffer.allocate(EV3_BLOCK_SIZE).order(ByteOrder.LITTLE_ENDIAN);
                 UsbRequest outRequest = new UsbRequest();
@@ -68,7 +67,6 @@ public class EV3UsbAndroid extends EV3 {
                 try {
                     if (!outRequest.queue(outBuffer, EV3_BLOCK_SIZE))
                     {
-                        outRequest.cancel();
                         throw new IOException("Can not queue OUT request");
                     }
                     for (UsbRequest usbRequest; (usbRequest = conn.requestWait()) != outRequest; ) {
@@ -114,14 +112,4 @@ public class EV3UsbAndroid extends EV3 {
         }
     }
 
-    private void cancelPending(UsbEndpoint in, UsbDeviceConnection conn) {
-        UsbRequest usbRequest = new UsbRequest();
-        usbRequest.initialize(conn, in);
-        try {
-            boolean cancel = usbRequest.cancel();
-            if (cancel) Log.i(LOG_TAG, "cancelling pending");
-        } finally {
-            usbRequest.close();
-        }
-    }
 }
